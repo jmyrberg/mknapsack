@@ -93,6 +93,7 @@ MTMSolver::MTMSolver(std::vector<int> profits, std::vector<int> weights, std::ve
 	w = weights;
 	c = capacities;
 	
+	cr.resize(m);
 	xh.resize(m);
 	xt.resize(m);
 	xl.resize(m);
@@ -102,6 +103,7 @@ MTMSolver::MTMSolver(std::vector<int> profits, std::vector<int> weights, std::ve
 		xh[k].resize(n);
 		xt[k].resize(n);
 		xl[k].resize(n);
+		cr[k] = c[k];
 	}
 	for (int j = 0; j < n; j++) {
 		x[j] = -1;
@@ -194,16 +196,17 @@ void MTMSolver::UpperBound() {
 	}
 	
 	// Remaining capacity
-	int c_ = c[i];
+	/*int c_ = c[i];
 	std::list<int> Si = S[i];
 	std::list<int>::iterator jit;
 	for (jit = Si.begin(); jit != Si.end(); jit++)
-		c_ -= w[*jit] * xh[i][*jit];
+		c_ -= w[*jit] * xh[i][*jit];*/
 	int wmin = *std::min_element(w_.begin(), w_.end());
 	if (wmin > c_)
-		c_ = 0; // Lightest item cannot be inserted to knapsack i
-	for (k = i+1; k < m; k++)
-		c_ += c[k];
+		c_ = 0; // Lightest item cannot be inserted to knapsack i*/
+	int c_ = 0;
+	for (k = i; k < m; k++)
+		c_ += cr[k];
 
 	// Maximum available profit
 	int wt = 0;
@@ -276,23 +279,44 @@ void MTMSolver::LowerBound() {
 	int n_,z_,cnt;
 	std::vector<int> p_,w_,xtt;
 	while (k < m) {
-		
+
 		// Update profits and weights
 		n_ = N_.size();
 		p_ = {};
 		w_ = {};
-		for (std::list<int>::iterator jit = N_.begin(); jit != N_.end(); jit++) {
+		for (jit = N_.begin(); jit != N_.end(); jit++) {
 			p_.push_back(p[*jit]);
 			w_.push_back(w[*jit]);
 		}
 		
+		// NOQA: Total available profit for last knapsack
+		if (k == m-1) {
+			int wt = 0;
+			int pt = 0;
+			xtt = {};
+			for (j = 0; j < n_; j++) {
+				wt += w_[j];
+				pt += p_[j];
+				xtt.push_back(1);
+			}
+			if ((wt <= c_) || (pt <= z - L)) {
+				L += pt;
+				cnt = 0;
+				for (jit = N_.begin(); jit != N_.end(); jit++) {
+					xt[k][*jit] = xtt[cnt];
+					cnt++;
+				}
+				break;
+			}
+		}
+
 		auto sol = SolveSingleKnapsack(c_, w_, p_, n_, true);
 		z_ = std::get<0>(sol);
 		xtt = std::get<1>(sol);
 		
 		// Update solution for knapsack k
 		cnt = 0;
-		for (std::list<int>::iterator jit = N_.begin(); jit != N_.end(); jit++) {
+		for (jit = N_.begin(); jit != N_.end(); jit++) {
 			xt[k][*jit] = xtt[cnt];
 			cnt++;
 		}
@@ -374,6 +398,7 @@ std::vector<int> MTMSolver::solve() {
 					// Add item j to current solution
 					S[i].push_back(j);
 					xh[i][j] = 1;
+					cr[i] -= w[j];
 					
 					ParametricUpperBound();
 
@@ -408,6 +433,7 @@ std::vector<int> MTMSolver::solve() {
 						
 						// Remove j from current solution
 						xh[i][j] = 0;
+						cr[i] += w[j];
 						
 						// Option 1
 						//if (Uj[j] == -1)
