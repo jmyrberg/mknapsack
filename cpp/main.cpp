@@ -1,5 +1,5 @@
 #include <iostream>
-#include "mtm.h"
+#include "mtm_c.h"
 
 
 using namespace mtm;

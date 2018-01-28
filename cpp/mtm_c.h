@@ -1,5 +1,5 @@
-#ifndef C_MTM_H
-#define C_MTM_H
+#ifndef MTM_C_H
+#define MTM_C_H
 
 #include <vector>
 #include <map>
@@ -19,11 +19,12 @@ class MTMSolver {
 	*/
 	private:
 		std::vector<int> p,w,c,x;
-		int n,m,z,i,L,U,UB,bt;
+		int n,m,z,i,L,U,UB,bt,Ul,cl,il;
 		std::map<int,std::list<int> > S;
-		std::vector<std::vector<int> > xh,xt;
-		void upperBound();
-		void lowerBound();
+		std::vector<std::vector<int> > xh,xt,xl;
+		void UpperBound();
+		void LowerBound();
+		void ParametricUpperBound();
 	
 	public:
 		MTMSolver(std::vector<int> profits, std::vector<int> weights, std::vector<int> capacities);
