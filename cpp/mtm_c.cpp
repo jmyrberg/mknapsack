@@ -16,7 +16,7 @@ int max(int a, int b) {
 
 
 std::tuple<int,std::vector<int>> SolveSingleKnapsack(int capacity, std::vector<int> weights, std::vector<int> profits, int n, bool return_picked) {
-	
+
 	// Impossible cases
 	int j;
 	std::vector<int> picked(n);
@@ -25,17 +25,21 @@ std::tuple<int,std::vector<int>> SolveSingleKnapsack(int capacity, std::vector<i
 			picked[j] = 0;
 		return std::make_tuple(0, picked);
 	}
-	
+
 	// Remove items where weight > capacity
-	std::map<int,int> idx2j;
-	for (j = 0; j < n; j++)
-		idx2j[j] = j;
+	std::vector<int> idx2j;
+	for (j = 0; j < n; j++) {
+		idx2j.push_back(j);
+		picked[j] = 0;
+	}
 	int wmax = *std::max_element(weights.begin(), weights.end());
+	std::vector<int> profits_ = profits;
+	std::vector<int> weights_ = weights;
 	if (wmax > capacity) {
-		std::vector<int> profits_,weights_;
+		profits_ = {};
+		weights_ = {};
 		int cnt = 0;
 		for (j = 0; j < n; j++) {
-			picked[j] = 0;
 			if (weights[j] <= capacity) {
 				profits_.push_back(profits[j]);
 				weights_.push_back(weights[j]);
@@ -43,9 +47,7 @@ std::tuple<int,std::vector<int>> SolveSingleKnapsack(int capacity, std::vector<i
 				cnt++;
 			}
 		}
-		profits = profits_;
-		weights = weights_;
-		n -= weights.size();
+		n = cnt;
 	}
 
 	// Run algorithm
@@ -59,22 +61,22 @@ std::tuple<int,std::vector<int>> SolveSingleKnapsack(int capacity, std::vector<i
 		K[l][0] = 0;
 	for (l = 1; l <= n; l++) {
 		for (w = 1; w <= capacity; w++) {
-			if (weights[l-1] <= w) {
-				K[l][w] = max(profits[l-1] + K[l-1][w-weights[l-1]],  K[l-1][w]);
+			if (weights_[l-1] <= w) {
+				K[l][w] = max(profits_[l-1] + K[l-1][w-weights_[l-1]],  K[l-1][w]);
 			} else {
 				K[l][w] = K[l-1][w];
-			};
-	   };
-	};	
+			}
+		}
+	}
 	
 	// Get picked up items as a vector
 	if (return_picked) {
 		l = n;
 		w = capacity;
 		while (l > 0) {
-			if ((K[l][w] - K[l-1][w-weights[l-1]]) == profits[l-1]) {
+			if ((K[l][w] - K[l-1][w-weights_[l-1]]) == profits_[l-1]) {
 				l--;
-				w = w - weights[l];
+				w = w - weights_[l];
 				picked[idx2j[l]] = 1;
 			} else {
 				l--;
@@ -262,7 +264,7 @@ void MTMSolver::LowerBound() {
 		auto sol = SolveSingleKnapsack(c_, w_, p_, n_, true);
 		z_ = std::get<0>(sol);
 		xtt = std::get<1>(sol);
-		
+
 		// Update solution for knapsack k
 		cnt = 0;
 		for (jit = N_.begin(); jit != N_.end(); jit++) {
@@ -302,38 +304,6 @@ std::vector<int> MTMSolver::solve() {
 		
 		// Current solution is better than any previous
 		if (L > z) {
-
-
-			// ** TODO: FIX HERE!! ** //
-			std::cout << "L = " << L << " | z = " << z << std::endl;
-
-			std::cout << "x = ";
-			for (j = 0; j < n; j++)
-				std::cout << " " << x[j];
-			std::cout << std::endl;
-
-			for (k = 0; k < m; k++) {
-				std::cout << "xh[" << k << "] = ";
-				for (j = 0; j < n; j++)
-					if (xh[k][j] == 1)
-						std::cout << " " << j;
-				std::cout << std::endl;
-			}
-			std::cout << std::endl;
-
-			for (k = 0; k < m; k++) {
-				std::cout << "xt[" << k << "] = ";
-				for (j = 0; j < n; j++)
-					if (xt[k][j] == 1)
-						std::cout << " " << j;
-				std::cout << std::endl;
-			}
-			std::cout << std::endl;
-
-			std::cout << "ph = " << ph << std::endl;
-
-			// ** ADDITIONAL PRINTING ENDS ** //
-
 
 			// Update new solution value z and solution x
 			z = L;
@@ -420,7 +390,7 @@ std::vector<int> MTMSolver::solve() {
 						jhuse[j] = 0;
 
 						if (Uj[j] == -1)
-							UpperBound();
+							ParametricUpperBound();
 						else
 							U = Uj[j];
 

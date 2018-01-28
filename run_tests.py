@@ -107,4 +107,16 @@ print('Number of backtracks performed: %d' % bt)
 print('Time spent: %.5f' % round(time.clock()-start,5))
 assert z == 708
 
+print('\n' + '-'*10 + ' TEST 09' + '-'*10)
+start = time.clock()
+p = [78, 77, 35, 34, 33, 89, 88, 36, 35, 94, 93, 75, 74, 74, 73, 79, 78, 80, 79, 16, 15, 10]
+w = [18, 18,  9,  9,  9, 23, 23, 20, 20, 59, 59, 61, 61, 70, 70, 75, 75, 76, 76, 30, 30, 40]
+c = [20, 30, 35, 40, 45, 100]
+z,x,bt = mtm(p, w, c)
+print('Total profit: %d' % z)
+print('Solution: %s' % x)
+print('Number of backtracks performed: %d' % bt)
+print('Time spent: %.5f' % round(time.clock()-start,5))
+assert z == 615
+
 print('\nTotal time: %.5f' % round(time.clock()-start_tot,5))

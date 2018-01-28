@@ -78,9 +78,6 @@ def mtm(p, w, c):
     df['c'] = df['c'].fillna(-1).astype(int)
     df = df.groupby('i').agg({'p': np.sum, 'w': np.sum, 'c': np.max})
     df['valid'] = (df['c'] >= df['w']).astype(int)
-    print(df)
-    print('z',z)
-    print(df.loc[df.index>=0,'p'].sum())
     if z != df.loc[df.index>=0,'p'].sum():
         raise ValueError("Solution value not matching " 
                          "the profits of chosen items")
