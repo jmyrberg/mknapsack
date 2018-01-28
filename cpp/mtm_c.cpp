@@ -20,7 +20,7 @@ std::tuple<int,std::vector<int>> SolveSingleKnapsack(int capacity, std::vector<i
 	// Impossible cases
 	int j;
 	std::vector<int> picked(n);
-	if ( (capacity == 0) || (n == 0) ) {
+	if ((capacity == 0) || (n == 0)) {
 		for (j = 0; j < n; j++)
 			picked[j] = 0;
 		return std::make_tuple(0, picked);
@@ -93,6 +93,7 @@ MTMSolver::MTMSolver(std::vector<int> profits, std::vector<int> weights, std::ve
 	w = weights;
 	c = capacities;
 	
+	jhuse.resize(n);
 	cr.resize(m);
 	xh.resize(m);
 	xt.resize(m);
@@ -123,24 +124,17 @@ MTMSolver::MTMSolver(std::vector<int> profits, std::vector<int> weights, std::ve
 void MTMSolver::ParametricUpperBound() {
 	int k,j;
 
-	// Condition 1
+	// Condition (1)
 	bool cond1 = true;
 	for (k = il; k <= i; k++)
 		for (j = 0; j < n; j++)
 			if ((xh[k][j] == 1) && (xl[k][j] == 0))
 				cond1 = false;
 
-	// Condition 2
-	std::map<int,int> cs;
-	for (k = 0; k <= i; k++) {
-		cs[k] = c[k];
-		for (j = 0; j < n; j++)
-			cs[k] -= w[j] * xh[k][j];
-	}
+	// Condition (2)
 	int ks = 0;
 	for (k = il; k <= i; k++)
-		ks += cs[k];
-
+		ks += cr[k];
 	int cl = 0;
 	for (k = il; k < m; k++) {
 		cl += c[k];
@@ -149,7 +143,7 @@ void MTMSolver::ParametricUpperBound() {
 	}
 	bool cond2 = (cl >= ks) ? true : false;
 
-	// Use previous upper bound when possible
+	// Use phevious upper bound when possible
 	if (!(cond1 && cond2)) {
 		UpperBound();
 		Ul = U;
@@ -164,46 +158,22 @@ void MTMSolver::ParametricUpperBound() {
 void MTMSolver::UpperBound() {
 	int k,j;
 
-	// Current solution upper bound
-	U = 0;
-	std::list<int> Sk;
-	for (k = 0; k < i+1; k++) {
-		Sk = S[k];
-		for (std::list<int>::iterator jit = Sk.begin(); jit != Sk.end(); jit++) {
-			U += p[*jit] * xh[k][*jit];
-		}
-	}
-
-	// Remaining items at i
-	std::vector<int> N_;
-	bool usej;
+	// // Profits and weights of remaining items
+	int n_ = 0;
+	for (j = 0; j < n; j++)
+		n_ += 1 - jhuse[j];
+	std::vector<int> N_(n_),p_(n_),w_(n_);
+	int cnt = 0;
 	for (j = 0; j < n; j++) {
-		usej = true;
-		for (k = 0; k < i+1; k++)
-			if (xh[k][j] == 1)
-				usej = false;
-		if (usej)
-			N_.push_back(j);
-	}
-
-	// Profits and weights of remaining items
-	int n_ = N_.size();
-	std::vector<int> p_(n_);
-	std::vector<int> w_(n_);
-	for (j = 0; j < n_; j++) {
-		p_[j] = p[N_[j]];
-		w_[j] = w[N_[j]];
+		if (jhuse[j] == 0) {
+			N_[cnt] = j;
+			p_[cnt] = p[j];
+			w_[cnt] = w[j];
+			cnt++;
+		}
 	}
 	
 	// Remaining capacity
-	/*int c_ = c[i];
-	std::list<int> Si = S[i];
-	std::list<int>::iterator jit;
-	for (jit = Si.begin(); jit != Si.end(); jit++)
-		c_ -= w[*jit] * xh[i][*jit];*/
-	int wmin = *std::min_element(w_.begin(), w_.end());
-	if (wmin > c_)
-		c_ = 0; // Lightest item cannot be inserted to knapsack i*/
 	int c_ = 0;
 	for (k = i; k < m; k++)
 		c_ += cr[k];
@@ -221,6 +191,7 @@ void MTMSolver::UpperBound() {
 	}
 	
 	// Solve knapsack, if maximum available profit exceeds current best profit
+	U = ph;
 	if (pt + U > z) {
 		auto sol = SolveSingleKnapsack(c_, w_, p_, n_, false);
 		int z_ = std::get<0>(sol);
@@ -236,25 +207,13 @@ void MTMSolver::LowerBound() {
 	int k,j;
 	
 	// Total profit for current solution
-	L = 0;
-	std::list<int> Sk;
-	for (k = 0; k < i+1; k++) {
-		Sk = S[k];
-		for (std::list<int>::iterator jit = Sk.begin(); jit != Sk.end(); jit++)
-			L += p[*jit] * xh[k][*jit];
-	}
+	L = ph;
 	
 	// Remaining items
 	std::list<int> Nd;
-	bool usej;
-	for (j = 0; j < n; j++) {
-		usej = true;
-		for (k = 0; k < i+1; k++)
-			if (xh[k][j] == 1)
-				usej = false;
-		if (usej)
+	for (j = 0; j < n; j++)
+		if (jhuse[j] == 0)
 			Nd.push_back(j);
-	}
 	std::list<int> N_;
 	std::list<int> Si = S[i];
 	std::list<int>::iterator jit,fit;
@@ -265,11 +224,9 @@ void MTMSolver::LowerBound() {
 	}
 	
 	// Remaining capacity
-	int c_ = c[i];
-	for (jit = Si.begin(); jit != Si.end(); jit++)
-		c_ -= w[*jit] * xh[i][*jit];
+	int c_ = cr[i];
 	
-	// Initialize solution for remaining capacities i,...,m
+	// Initialize solution
 	for (k = 0; k < m; k++)
 		for (j = 0; j < n; j++)
 			xt[k][j] = 0;
@@ -288,27 +245,6 @@ void MTMSolver::LowerBound() {
 			p_.push_back(p[*jit]);
 			w_.push_back(w[*jit]);
 		}
-		
-		// NOQA: Total available profit for last knapsack
-		if (k == m-1) {
-			int wt = 0;
-			int pt = 0;
-			xtt = {};
-			for (j = 0; j < n_; j++) {
-				wt += w_[j];
-				pt += p_[j];
-				xtt.push_back(1);
-			}
-			if ((wt <= c_) || (pt <= z - L)) {
-				L += pt;
-				cnt = 0;
-				for (jit = N_.begin(); jit != N_.end(); jit++) {
-					xt[k][*jit] = xtt[cnt];
-					cnt++;
-				}
-				break;
-			}
-		}
 
 		auto sol = SolveSingleKnapsack(c_, w_, p_, n_, true);
 		z_ = std::get<0>(sol);
@@ -321,13 +257,13 @@ void MTMSolver::LowerBound() {
 			cnt++;
 		}
 		L += z_;
-		
+
 		// Remove solution items
 		for (j = 0; j < n; j++)
 			if (xt[k][j] == 1)
 				Nd.remove(j);
 		N_ = Nd;
-		
+
 		k++;
 		
 		// Update capacity
@@ -340,7 +276,7 @@ void MTMSolver::LowerBound() {
 std::vector<int> MTMSolver::solve() {
 	int k,l,j;
 	std::list<int> Si,I;
-	bool heuristic,update,backtrack,stopUpdate;
+	bool heuristic,update,backtrack,stop_update;
 	
 	heuristic = true;
 	while (heuristic) {
@@ -351,7 +287,7 @@ std::vector<int> MTMSolver::solve() {
 		
 		LowerBound();
 		
-		// Current solution is better than any previous
+		// Current solution is better than any phevious
 		if (L > z) {
 			
 			// Update new solution value z and solution x
@@ -376,11 +312,11 @@ std::vector<int> MTMSolver::solve() {
 				backtrack = true;
 				update = false; // go to backtrack
 			}
-		};
+		}
 		
 		// UPDATE
 		if (update) {
-			stopUpdate = false;
+			stop_update = false;
 			while (i < m - 1) {
 				
 				// Add previous LB solution to node candidates
@@ -390,30 +326,30 @@ std::vector<int> MTMSolver::solve() {
 						I.push_back(l);
 					
 				while (I.size() > 0) {
-					j = *std::min_element(std::begin(I), std::end(I));
+					j = *std::min_element(I.begin(), I.end());
 					I.remove(j);
-
-					//Uj[j] = U;
 
 					// Add item j to current solution
 					S[i].push_back(j);
 					xh[i][j] = 1;
 					cr[i] -= w[j];
+					ph += p[j];
+					jhuse[j] = 1;
 					
 					ParametricUpperBound();
 
 					// Current solution cannot be better than the best solution so far
 					if (U <= z) {
-						stopUpdate = true; // go to backtrack
+						stop_update = true; // go to backtrack
 						break;
 					}
-				};
-				if (stopUpdate)
+				}
+				if (stop_update)
 					break;
 				else
 					i++;
-			};
-			if ((i == m - 1) && (!stopUpdate))
+			}
+			if ((i == m - 1) && (!stop_update))
 				i = m - 2;
 		}
 		
@@ -434,14 +370,9 @@ std::vector<int> MTMSolver::solve() {
 						// Remove j from current solution
 						xh[i][j] = 0;
 						cr[i] += w[j];
-						
-						// Option 1
-						//if (Uj[j] == -1)
-						//	UpperBound();
-						//else
-						//	U = Uj[j];
+						ph -= p[j];
+						jhuse[j] = 0;
 
-						// Option 2
 						UpperBound();
 
 						// Current solution is better than the best solution so far
@@ -449,14 +380,14 @@ std::vector<int> MTMSolver::solve() {
 							heuristic = true; // go to heuristic
 							break;
 						}
-					};
+					}
 					
-				};
+				}
 				if (heuristic)
 					break;
 				else 
 					i--;
-			};
+			}
 		}
 	} // heuristic
 	
@@ -473,4 +404,4 @@ std::vector<int> MTMSolver::solve() {
 	//std::cout << "BACKTRACKS = " << bt << std::endl;
 	return ret;
 }
-}
+} // namespace

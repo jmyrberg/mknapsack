@@ -18,17 +18,39 @@ class MTMSolver {
 	Discrete Applied Mathematics, 3 (1981), pp. 257-288
 	*/
 	private:
-		std::vector<int> p,w,c,x,cr;
-		int n,m,z,i,L,U,UB,bt,Ul,cl,il,pr;
-		std::map<int,std::list<int> > S;
-		std::vector<std::vector<int> > xh,xt,xl;
-		void UpperBound();
-		void LowerBound();
-		void ParametricUpperBound();
+		std::vector<int> p; // Item profits
+		std::vector<int> w; // Item weights
+		std::vector<int> c; // Item capacities
+		std::vector<int> x; // Current best solution (knapsack for each item)
+		std::vector<int> cr; // Knapsack residual capacities for current solution
+		std::vector<int> jhuse; // Whether an item is assigned to a knapsack
+
+		int n; // Number of items
+		int m; // Number of knapsacks
+		int z; // Current best solution value
+		int i; // Current knapsack
+		int L; // Lower bound for current solution
+		int U; // Upper bound for current solution
+		int UB; // Upper bound at root node
+		int bt; // Number of backtracks performed
+		int Ul; // Upper bound of last solution (parametric upper bound)
+		int cl; // Residual capacities of last solution (parametric upper bound)
+		int il; // Knapsack considered in last solution (parametric upper bound)
+		int ph; // Total profit of current solution
+
+		std::map<int,std::list<int> > S; // Unlabeled (=assigned) items for each knapsack
+
+		std::vector<std::vector<int> > xh; // Current solution
+		std::vector<std::vector<int> > xt; // Latest solution calculated in lower bound
+		std::vector<std::vector<int> > xl; // Last current solution (parametric upper bound)
+
+		void ParametricUpperBound(); // Compute parametric upper bound, if possible
+		void UpperBound(); // Compute upper bound
+		void LowerBound(); // Compute lower bound
 	
 	public:
 		MTMSolver(std::vector<int> profits, std::vector<int> weights, std::vector<int> capacities);
-		std::vector<int> solve();
+		std::vector<int> solve(); // Run the algorithm
 };
 }
 
