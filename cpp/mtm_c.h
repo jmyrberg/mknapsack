@@ -10,7 +10,7 @@ namespace mtm {
 
 
 class MTMSolver {
-	/*	Solves the Multiple Knapsack Problem (MKP) with MTM algorithm.
+	/*	Solves the Multiple 0-1 Knapsack Problem (MKP) with MTM algorithm.
 	
 	Implementation reference:
 	S. Martello, P. Toth
@@ -18,12 +18,10 @@ class MTMSolver {
 	Discrete Applied Mathematics, 3 (1981), pp. 257-288
 	*/
 	private:
+
 		std::vector<int> p; // Item profits
 		std::vector<int> w; // Item weights
 		std::vector<int> c; // Item capacities
-		std::vector<int> x; // Current best solution (knapsack for each item)
-		std::vector<int> cr; // Knapsack residual capacities for current solution
-		std::vector<int> jhuse; // Whether an item is assigned to a knapsack
 
 		int n; // Number of items
 		int m; // Number of knapsacks
@@ -33,10 +31,15 @@ class MTMSolver {
 		int U; // Upper bound for current solution
 		int UB; // Upper bound at root node
 		int bt; // Number of backtracks performed
-		int Ul; // Upper bound of last solution (parametric upper bound)
-		int cl; // Residual capacities of last solution (parametric upper bound)
-		int il; // Knapsack considered in last solution (parametric upper bound)
 		int ph; // Total profit of current solution
+
+		int Ul; // Upper bound of last solution (parametric upper bound)
+		int il; // Knapsack considered in last solution (parametric upper bound)
+
+		std::vector<int> x; // Current best solution (knapsack for each item)
+		std::vector<int> cr; // Knapsack residual capacities for current solution
+		std::vector<int> jhuse; // Whether an item is assigned to a knapsack
+		std::vector<int> Uj; // Upper bound of father node before setting xh[i][j] = 1
 
 		std::map<int,std::list<int> > S; // Unlabeled (=assigned) items for each knapsack
 

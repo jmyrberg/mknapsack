@@ -20,7 +20,7 @@ std::tuple<int,std::vector<int>> SolveSingleKnapsack(int capacity, std::vector<i
 	// Impossible cases
 	int j;
 	std::vector<int> picked(n);
-	if ((capacity == 0) || (n == 0)) {
+	if ((capacity <= 0) || (n == 0)) {
 		for (j = 0; j < n; j++)
 			picked[j] = 0;
 		return std::make_tuple(0, picked);
@@ -47,7 +47,7 @@ std::tuple<int,std::vector<int>> SolveSingleKnapsack(int capacity, std::vector<i
 		weights = weights_;
 		n -= weights.size();
 	}
-	
+
 	// Run algorithm
 	int l, w;
 	int K[n+1][capacity+1];
@@ -87,37 +87,50 @@ std::tuple<int,std::vector<int>> SolveSingleKnapsack(int capacity, std::vector<i
 
 
 MTMSolver::MTMSolver(std::vector<int> profits, std::vector<int> weights, std::vector<int> capacities) {
-	n = profits.size();
-	m = capacities.size();
 	p = profits;
 	w = weights;
 	c = capacities;
-	
-	jhuse.resize(n);
-	cr.resize(m);
-	xh.resize(m);
-	xt.resize(m);
-	xl.resize(m);
-	x.resize(n);
-	for (int k = 0; k < m; k++) {
-		S[k] = {};
-		xh[k].resize(n);
-		xt[k].resize(n);
-		xl[k].resize(n);
-		cr[k] = c[k];
-	}
-	for (int j = 0; j < n; j++) {
-		x[j] = -1;
-	}
-	
+
+	n = profits.size();
+	m = capacities.size();
 	z = 0;
 	i = 0;
+	L = 0;
+	U = 0;
+	UB = 0;
 	bt = 0;
-	UpperBound();
-	UB = U;
+	ph = 0;
 
 	Ul = 0;
 	il = 0;
+
+	x.resize(n);
+	cr.resize(m);
+	jhuse.resize(n);
+	Uj.resize(n);
+
+	xh.resize(m);
+	xt.resize(m);
+	xl.resize(m);
+
+	for (int k = 0; k < m; k++) {
+		cr[k] = c[k];
+
+		S[k] = {};
+
+		xh[k].resize(n);
+		xt[k].resize(n);
+		xl[k].resize(n);
+	}
+	for (int j = 0; j < n; j++) {
+		x[j] = -1;
+		jhuse[j] = 0;
+		Uj[j] = -1;
+	}
+
+	UpperBound(); // Sets U
+	UB = U;
+
 }
 
 
@@ -133,7 +146,7 @@ void MTMSolver::ParametricUpperBound() {
 
 	// Condition (2)
 	int ks = 0;
-	for (k = il; k <= i; k++)
+	for (k = il; k <= i+1; k++)
 		ks += cr[k];
 	int cl = 0;
 	for (k = il; k < m; k++) {
@@ -143,8 +156,8 @@ void MTMSolver::ParametricUpperBound() {
 	}
 	bool cond2 = (cl >= ks) ? true : false;
 
-	// Use phevious upper bound when possible
-	if (!(cond1 && cond2)) {
+	// Use previous upper bound when possible
+	if (!(cond1 && cond2) || (Ul == 0)) {
 		UpperBound();
 		Ul = U;
 	} else {
@@ -161,7 +174,8 @@ void MTMSolver::UpperBound() {
 	// // Profits and weights of remaining items
 	int n_ = 0;
 	for (j = 0; j < n; j++)
-		n_ += 1 - jhuse[j];
+		if (jhuse[j] == 0)
+			n_ += 1;
 	std::vector<int> N_(n_),p_(n_),w_(n_);
 	int cnt = 0;
 	for (j = 0; j < n; j++) {
@@ -182,7 +196,7 @@ void MTMSolver::UpperBound() {
 	int wt = 0;
 	int pt = 0;
 	for (j = 0; j < n_; j++) {
-		if (wt + w_[j] > c_) {
+		if (wt + w_[j] >= c_) {
 			pt += (int) ceil((c_ - wt) * p_[j] / w_[j]);
 			break;
 		}
@@ -199,7 +213,6 @@ void MTMSolver::UpperBound() {
 	} else {
 		U += pt;
 	}
-
 }
 
 
@@ -222,7 +235,7 @@ void MTMSolver::LowerBound() {
 		if (!(fit != Si.end()))
 			N_.push_back(*jit);
 	}
-	
+
 	// Remaining capacity
 	int c_ = cr[i];
 	
@@ -287,9 +300,41 @@ std::vector<int> MTMSolver::solve() {
 		
 		LowerBound();
 		
-		// Current solution is better than any phevious
+		// Current solution is better than any previous
 		if (L > z) {
-			
+
+
+			// ** TODO: FIX HERE!! ** //
+			std::cout << "L = " << L << " | z = " << z << std::endl;
+
+			std::cout << "x = ";
+			for (j = 0; j < n; j++)
+				std::cout << " " << x[j];
+			std::cout << std::endl;
+
+			for (k = 0; k < m; k++) {
+				std::cout << "xh[" << k << "] = ";
+				for (j = 0; j < n; j++)
+					if (xh[k][j] == 1)
+						std::cout << " " << j;
+				std::cout << std::endl;
+			}
+			std::cout << std::endl;
+
+			for (k = 0; k < m; k++) {
+				std::cout << "xt[" << k << "] = ";
+				for (j = 0; j < n; j++)
+					if (xt[k][j] == 1)
+						std::cout << " " << j;
+				std::cout << std::endl;
+			}
+			std::cout << std::endl;
+
+			std::cout << "ph = " << ph << std::endl;
+
+			// ** ADDITIONAL PRINTING ENDS ** //
+
+
 			// Update new solution value z and solution x
 			z = L;
 			for (j = 0; j < n; j++)
@@ -335,6 +380,7 @@ std::vector<int> MTMSolver::solve() {
 					cr[i] -= w[j];
 					ph += p[j];
 					jhuse[j] = 1;
+					Uj[j] = U;
 					
 					ParametricUpperBound();
 
@@ -373,7 +419,10 @@ std::vector<int> MTMSolver::solve() {
 						ph -= p[j];
 						jhuse[j] = 0;
 
-						UpperBound();
+						if (Uj[j] == -1)
+							UpperBound();
+						else
+							U = Uj[j];
 
 						// Current solution is better than the best solution so far
 						if (U > z) {
@@ -400,8 +449,14 @@ std::vector<int> MTMSolver::solve() {
 		else
 			ret[j] = bt;
 	}
-	//std::cout << "SOLUTION = " << z << std::endl;
-	//std::cout << "BACKTRACKS = " << bt << std::endl;
+
+	/*std::cout << "x = ";
+	for (j = 0; j < n; j++)
+		std::cout << " " << x[j]+1;
+	std::cout << std::endl;
+	std::cout << "SOLUTION = " << z << std::endl;
+	std::cout << "BACKTRACKS = " << bt << std::endl;*/
+
 	return ret;
 }
 } // namespace
