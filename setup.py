@@ -24,6 +24,7 @@ setup(name='mkp',
       author='Jesse Myrberg',
       author_email='jesse.myrberg@gmail.com',
       url='https://github.com/jmyrberg/mkp',
+      license='MIT',
       packages=['mkp','mkp._algorithms_cy'],
       package_dir={
           'mkp': 'python/mkp',

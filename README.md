@@ -1,14 +1,14 @@
 # mkp
 
-Library for solving the [Multiple Knapsack Problem](http://www.or.deis.unibo.it/kp/Chapter6.pdf) with MTM algorithm, 
-as described in [S. Martello and P. Toth (1981)](https://www.sciencedirect.com/science/article/pii/0166218X81900056).
-This repository contains a Python interface to a C++ implementation of the algorithm.
+Algorithms for solving the [Multiple 0-1 Knapsack Problem](http://www.or.deis.unibo.it/kp/Chapter6.pdf) (MKP).
+Currently, only the [MTM algorithm by S. Martello and P. Toth (1981)](https://www.sciencedirect.com/science/article/pii/0166218X81900056) is implemented, 
+which guarantees an exact solution. This repository contains a Python interface to C++ implementation of the algorithm.
 
 ## Installation
 
 1. Clone the repository ```git clone https://github.com/jmyrberg/mkp```
 2. Run ```pip install -r requirements.txt``` at the root of repository
-3. Run ```python setup.py install```
+3. Run ```python setup.py install``` for installation
 
 ## Example usage
 Given ten items with the following profits and weights:
@@ -31,6 +31,10 @@ print('Total profit: %d' % z)
 print('Solution: %s' % x)
 print('Number of backtracks performed: %d' % bt)
 ```
+
+## References
+* [MTM algorithm by Martello and Toth](http://people.sc.fsu.edu/~jburkardt/f77_src/knapsack/knapsack.f) (Fortran)
+* [MTHM and MTHG algorithms by Jeff Hetherly](https://github.com/jhetherly/python_knapsack) (Python)
 
 ---
 Jesse Myrberg (jesse.myrberg@gmail.com)
