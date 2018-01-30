@@ -7,7 +7,8 @@ This repository contains a Python interface to a C++ implementation of the algor
 ## Installation
 
 1. Clone the repository ```git clone https://github.com/jmyrberg/mkp```
-2. Run ```python setup.py install``` at the source of this repository
+2. Run ```pip install -r requirements.txt``` at the root of repository
+3. Run ```python setup.py install```
 
 ## Example usage
 Given ten items with the following profits and weights:
