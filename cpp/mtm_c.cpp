@@ -187,7 +187,7 @@ void MTMSolver::ParametricUpperBound() {
 		} else {
 			UpperBound();
 		}
-		//std::cout << "U = " << U << " | L = " << L << std::endl;
+		//std::cout << "U = " << U << " | L = " << L << " | " << (condl1 && condl2) <<std::endl;
 		/*} else { // ROOT SOLUTION
 
 			// Condition (1)
@@ -260,7 +260,9 @@ void MTMSolver::UpperBound() {
 	
 	// Solve knapsack, if maximum available profit exceeds current best profit
 	U = ph;
-	std::vector<int> xtt;
+	std::vector<int> xtt(n_);
+	for (j = 0; j < n; j++)
+		xl[j] = 0;
 	if (wt > c_) {
 		auto sol = SolveSingleKnapsack(c_, w_, p_, n_, true);
 		int z_ = std::get<0>(sol);
@@ -268,22 +270,21 @@ void MTMSolver::UpperBound() {
 		U += z_;
 
 		cl = c_;
-		for (j = 0; j < n; j++)
-			xl[j] = 0;
 		cnt = 0;
 		for (auto jit = N_.begin(); jit != N_.end(); jit++) {
 			xl[*jit] = xtt[cnt];
 			if (xtt[cnt] == 1)
-				cl -= 0*w_[cnt];
+				cl -= w_[cnt];
 			cnt++;
 		}
-		Ul = U;
 	} else {
-		U += pt;
-		cl = c_ - wt;
 		for (auto jit = N_.begin(); jit != N_.end(); jit++)
 			xl[*jit] = 1;
+		U += pt;
+		cl = c_ - wt;
 	}
+	Ul = U;
+	il = i;
 }
 
 
@@ -376,6 +377,7 @@ std::vector<int> MTMSolver::solve() {
 
 			// Update new solution value z and solution x
 			z = L;
+			std::cout << "z = " << z << " | U = " << U << " | L = " << L << std::endl;
 			for (j = 0; j < n; j++)
 				x[j] = -1;
 			for (k = 0; k < m; k++)
@@ -420,8 +422,7 @@ std::vector<int> MTMSolver::solve() {
 					ph += p[j];
 					jhuse[j] = 1;
 					Uj[j] = U;
-					il = i;
-					
+
 					ParametricUpperBound();
 
 					// Current solution cannot be better than the best solution so far
@@ -459,10 +460,7 @@ std::vector<int> MTMSolver::solve() {
 						ph -= p[j];
 						jhuse[j] = 0;
 
-						if (Uj[j] == -1)
-							ParametricUpperBound();
-						else
-							U = Uj[j];
+						U = Uj[j];
 
 						// Current solution is better than the best solution so far
 						if (U > z) {
@@ -474,8 +472,10 @@ std::vector<int> MTMSolver::solve() {
 				}
 				if (heuristic)
 					break;
-				else 
+				else {
 					i--;
+					il -= 1;
+				}
 			}
 		}
 	} // heuristic
