@@ -35,13 +35,13 @@ class MTMSolver {
 		int ph; // Total profit of current solution
 		std::vector<int> cr; // Knapsack residual capacities for current solution
 
-		int UB; // Upper bound at root node
+		int Ur; // Upper bound at root node
 		std::vector<int> xr; // Root solution (parametric upper bound)
 
 		int Ul; // Upper bound of last solution (parametric upper bound)
 		int il; // Knapsack considered in last solution (parametric upper bound)
 		std::vector<int> xl; // Last current solution (parametric upper bound)
-		int cl;
+		int cl; // Residual capacity of last solution (parametric upper bound)
 
 		std::vector<int> x; // Current best solution (knapsack for each item)
 		std::vector<std::vector<int> > xt; // Latest solution calculated in lower bound

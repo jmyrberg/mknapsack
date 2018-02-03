@@ -15,94 +15,74 @@ int max(int a, int b) {
 }
 
 
-std::tuple<int,std::vector<int>> SolveSingleKnapsack(int capacity, std::vector<int> weights, std::vector<int> profits, int n, bool return_picked) {
+std::tuple<int,std::vector<int>> SolveSingleKnapsack(int capacity, std::vector<int> weights, std::vector<int> profits, int n_items, bool return_picked) {
+
+	std::vector<int> p = profits;
+	std::vector<int> w = weights;
+	int c = capacity;
+	int n = n_items;
 
 	// Impossible cases
-	int j;
-	int np = n;
-	std::vector<int> picked(n);
-	if ((capacity <= 0) || (n == 0)) {
-		for (j = 0; j < n; j++)
-			picked[j] = 0;
+	std::vector<int> picked(n,0);
+	if ((c == 0) || (n == 0))
 		return std::make_tuple(0, picked);
-	}
 
 	// Remove items where weight > capacity
-	std::vector<int> idx2j;
-	for (j = 0; j < n; j++) {
-		idx2j.push_back(j);
-		picked[j] = 0;
-	}
-	int wmax = *std::max_element(weights.begin(), weights.end());
-	std::vector<int> profits_ = profits;
-	std::vector<int> weights_ = weights;
-	if (wmax > capacity) {
-		profits_ = {};
-		weights_ = {};
+	int j;
+	std::vector<int> idx2j(n);
+	for (j = 0; j < n; j++)
+		idx2j[j] = j;
+	if (*std::max_element(w.begin(), w.end()) > c) {
+		p = {};
+		w = {};
 		int cnt = 0;
-		for (j = 0; j < n; j++) {
-			if (weights[j] <= capacity) {
-				profits_.push_back(profits[j]);
-				weights_.push_back(weights[j]);
+		for (j = 0; j < n; j++)
+			if (weights[j] <= c) {
+				p.push_back(profits[j]);
+				w.push_back(weights[j]);
 				idx2j[cnt] = j;
 				cnt++;
 			}
-		}
-		np = cnt;
+		n = cnt;
+		if (n == 0)
+			return std::make_tuple(0, picked);
 	}
-
-	//std::cout << "capacity = " << capacity << " | np = " << np << std::endl;
-	if (np == 0)
-		return std::make_tuple(0, picked);
 
 	// Run algorithm
-	int l, w;
-	std::vector<std::vector<int> > K;
-	K.resize(np+1);
+	int i, k;
+	std::vector<std::vector<int> > K(n+1, std::vector<int>(c+1));
 
 	// Build DP table
-	for (l = 0; l <= np; l++) {
-		K[l].resize(capacity+1);
-	}
-	for (l = 0; l <= np; l++) {
-		K[l][0] = 0;
-	}
-	for (w = 0; w <= capacity; w++)
-		K[0][w] = 0;
-	for (l = 1; l <= np; l++) {
-		for (w = 1; w <= capacity; w++) {
-			if (weights_[l-1] <= w) {
-				K[l][w] = max(profits_[l-1] + K[l-1][w-weights_[l-1]],  K[l-1][w]);
-			} else {
-				K[l][w] = K[l-1][w];
-			}
-		}
-	}
-	//std::cout << "Pickign up stuff" << std::endl;
+	for (i = 0; i <= n; i++)
+		K[i][0] = 0;
+	for (k = 0; k <= c; k++)
+		K[0][k] = 0;
+	for (i = 1; i <= n; i++)
+		for (k = 1; k <= c; k++)
+			K[i][k] = (w[i-1] <= k) ? max(p[i-1] + K[i-1][k-w[i-1]],  K[i-1][k]) : K[i-1][k];
+
 	// Get picked up items as a vector
+	int wn;
 	if (return_picked) {
-		l = np;
-		w = capacity;
-		while (l > 0) {
-			if (w-weights_[l-1] >= 0) {
-				if (K[l][w] - K[l-1][w-weights_[l-1]] == profits_[l-1]) {
-					//std::cout << "Klw = " << K[l][w] << " | Kl-1w-1 = " << K[l-1][w-weights_[l-1]] << " | profits = " << profits_[l-1] << std::endl;
-					l--;
-					w -= weights_[l];
-					picked[idx2j[l]] = 1;
+		i = n;
+		k = c;
+		while (i > 0) {
+			wn = k - w[i-1];
+			if (wn >= 0) {
+				if (K[i][k] - K[i-1][wn] == p[i-1]) {
+					i--;
+					k -= w[i];
+					picked[idx2j[i]] = 1;
 				} else {
-					//std::cout << "else" << std::endl;
-					l--;
-					picked[idx2j[l]] = 0;
+					i--;
+					picked[idx2j[i]] = 0;
 				}
-				//std::cout << "l done" << std::endl;
 			} else {
-				l--;
+				i--;
 			}
 		}
 	}
-	//std::cout << "here at end = " << capacity << " | np = " << np << std::endl;
-	return std::make_tuple(K[np][capacity], picked);
+	return std::make_tuple(K[n][c], picked);
 }
 
 
@@ -117,7 +97,7 @@ MTMSolver::MTMSolver(std::vector<int> profits, std::vector<int> weights, std::ve
 	i = 0;
 	L = 0;
 	U = 0;
-	UB = 0;
+	Ur= 0;
 	bt = 0;
 	ph = 0;
 
@@ -151,78 +131,72 @@ MTMSolver::MTMSolver(std::vector<int> profits, std::vector<int> weights, std::ve
 		Uj[j] = -1;
 	}
 
-	//UpperBound(); // Sets U
 	auto sol = SolveSingleKnapsack(ct, w, p, n, true);
 	U = std::get<0>(sol);
 	xr = std::get<1>(sol);
-	UB = U;
-
+	Ur= U;
 }
 
 
 void MTMSolver::ParametricUpperBound() {
-	int k,j;
+	int k,j,kq;
+	bool calc_ub = true;
 
-	if (Ul == 0) {
-		UpperBound();
-	} else { // LAST SOLUTION
+	// Last solution
+	while (true) {
 
 		// Condition (1)
 		bool condl1 = true;
 		for (k = il; k <= i; k++)
 			for (j = 0; j < n; j++)
-				if ((xh[k][j] == 1) && (xl[j] == 0))
+				if ((xh[k][j] == 1) && (xl[j] == 0)) {
 					condl1 = false;
+					break;
+				}
 
 		// Condition (2)
-		int kq = 0;
+		kq = 0;
 		for (k = il; k < i; k++)
 			kq += cr[k];
 		bool condl2 = (cl >= kq) ? true : false;
 
 		// Use previous upper bound from last solution?
-		//std::cout << "cl = " << cl << " | kq = " << kq << std::endl;
 		if (condl1 && condl2) {
 			U = Ul;
-		} else {
-			UpperBound();
+			calc_ub = false;
 		}
-		//std::cout << "U = " << U << " | L = " << L << " | " << (condl1 && condl2) <<std::endl;
-		/*} else { // ROOT SOLUTION
-
-			// Condition (1)
-			bool condr1 = true;
-			for (k = 0; k <= i; k++)
-					for (j = 0; j < n; j++)
-						if ((xh[k][j] == 1) && (xr[j] == 0))
-							condr1 = false;
-
-			// Condition (2)
-			ks = 0;
-			for (k = 0; k <= i+1; k++)
-				ks += cr[k];
-			cl = 0;
-			for (k = 0; k < m; k++) {
-				cl += c[k];
-			}
-			for (j = 0; j < n; j++)
-				cl -= w[j] * xr[j];
-			bool condr2 = (cl >= ks) ? true : false;
-
-			// Use previous upper bound from root solution?
-			if (condr1 && condr2) {
-				U = UB;
-				std::cout << "Using root solution" << std::endl;
-			} else {
-				UpperBound();
-				Ul = U;
-				for (k = 0; k < m; k++)
-					for (j = 0; j < n; j++)
-						xl[j] = (xt[k][j] == 1) ? 1 : 0;
-				il = i;
-			}
-		}*/
+		break;
 	}
+
+	// Root solution
+	while (true && calc_ub) {
+
+		// Condition (1)
+		bool condr1 = true;
+		for (k = 0; k <= i; k++)
+			for (j = 0; j < n; j++)
+				if ((xh[k][j] == 1) && (xr[j] == 0)) {
+					condr1 = false;
+					break;
+				}
+
+		// Condition (2)
+		kq = 0;
+		for (k = 0; k < i; k++)
+			kq += cr[k];
+		bool condr2 = (cl >= kq) ? true : false;
+
+		// Use previous upper bound from last solution?
+		if (condr1 && condr2) {
+			U = Ur;
+			calc_ub = false;
+		}
+		break;
+	}
+
+	// Calculate new upper bound
+	if (calc_ub)
+		UpperBound();
 }
 		
 
@@ -232,37 +206,31 @@ void MTMSolver::UpperBound() {
 	// // Profits and weights of remaining items
 	int n_ = 0;
 	for (j = 0; j < n; j++)
-		if (jhuse[j] == 0)
-			n_ += 1;
+		n_ += 1 - jhuse[j];
 	std::vector<int> N_(n_),p_(n_),w_(n_);
 	int cnt = 0;
+	int wt = 0;
+	int pt = 0;
 	for (j = 0; j < n; j++) {
 		if (jhuse[j] == 0) {
 			N_[cnt] = j;
 			p_[cnt] = p[j];
 			w_[cnt] = w[j];
+			wt += w[j];
+			pt += p[j];
 			cnt++;
 		}
 	}
 	
 	// Remaining capacity
-	int c_ = 0;
-	for (k = i; k < m; k++)
+	int c_ = (*std::min_element(w_.begin(), w_.end()) > cr[i]) ? 0 : cr[i];
+	for (k = i+1; k < m; k++)
 		c_ += cr[k];
-
-	// Maximum available profit
-	int wt = 0;
-	int pt = 0;
-	for (j = 0; j < n_; j++) {
-		wt += w_[j];
-		pt += p_[j];
-	}
 	
 	// Solve knapsack, if maximum available profit exceeds current best profit
 	U = ph;
 	std::vector<int> xtt(n_);
-	for (j = 0; j < n; j++)
-		xl[j] = 0;
+	std::fill(xl.begin(), xl.end(), 0);
 	if (wt > c_) {
 		auto sol = SolveSingleKnapsack(c_, w_, p_, n_, true);
 		int z_ = std::get<0>(sol);
@@ -295,13 +263,12 @@ void MTMSolver::LowerBound() {
 	L = ph;
 	
 	// Remaining items
-	std::list<int> Nd;
+	std::list<int> Nd,N_;
+	std::list<int> Si = S[i];
+	std::list<int>::iterator jit,fit;
 	for (j = 0; j < n; j++)
 		if (jhuse[j] == 0)
 			Nd.push_back(j);
-	std::list<int> N_;
-	std::list<int> Si = S[i];
-	std::list<int>::iterator jit,fit;
 	for (jit = Nd.begin(); jit != Nd.end(); jit++) {
 		fit = std::find(Si.begin(), Si.end(), *jit);
 		if (!(fit != Si.end()))
@@ -313,8 +280,7 @@ void MTMSolver::LowerBound() {
 	
 	// Initialize solution
 	for (k = 0; k < m; k++)
-		for (j = 0; j < n; j++)
-			xt[k][j] = 0;
+		std::fill(xt[k].begin(), xt[k].end(), 0);
 	
 	k = i;
 
@@ -324,11 +290,13 @@ void MTMSolver::LowerBound() {
 
 		// Update profits and weights
 		n_ = N_.size();
-		p_ = {};
-		w_ = {};
+		p_.resize(n_);
+		w_.resize(n_);
+		cnt = 0;
 		for (jit = N_.begin(); jit != N_.end(); jit++) {
-			p_.push_back(p[*jit]);
-			w_.push_back(w[*jit]);
+			p_[cnt] = p[*jit];
+			w_[cnt] = w[*jit];
+			cnt++;
 		}
 
 		auto sol = SolveSingleKnapsack(c_, w_, p_, n_, true);
@@ -389,7 +357,7 @@ std::vector<int> MTMSolver::solve() {
 						x[j] = k;
 			
 			// Optimal solution has been found globally
-			if (z == UB) {
+			if (z == Ur) {
 				break; // stop search
 			}
 			
