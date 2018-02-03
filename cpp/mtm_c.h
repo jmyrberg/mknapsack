@@ -25,27 +25,30 @@ class MTMSolver {
 
 		int n; // Number of items
 		int m; // Number of knapsacks
+		int bt; // Number of backtracks performed
+
+		std::vector<std::vector<int> > xh; // Current solution
 		int z; // Current best solution value
 		int i; // Current knapsack
 		int L; // Lower bound for current solution
 		int U; // Upper bound for current solution
-		int UB; // Upper bound at root node
-		int bt; // Number of backtracks performed
 		int ph; // Total profit of current solution
+		std::vector<int> cr; // Knapsack residual capacities for current solution
+
+		int UB; // Upper bound at root node
+		std::vector<int> xr; // Root solution (parametric upper bound)
 
 		int Ul; // Upper bound of last solution (parametric upper bound)
 		int il; // Knapsack considered in last solution (parametric upper bound)
+		std::vector<int> xl; // Last current solution (parametric upper bound)
+		int cl;
 
 		std::vector<int> x; // Current best solution (knapsack for each item)
-		std::vector<int> cr; // Knapsack residual capacities for current solution
-		std::vector<int> jhuse; // Whether an item is assigned to a knapsack
-		std::vector<int> Uj; // Upper bound of father node before setting xh[i][j] = 1
+		std::vector<std::vector<int> > xt; // Latest solution calculated in lower bound
 
 		std::map<int,std::list<int> > S; // Unlabeled (=assigned) items for each knapsack
-
-		std::vector<std::vector<int> > xh; // Current solution
-		std::vector<std::vector<int> > xt; // Latest solution calculated in lower bound
-		std::vector<std::vector<int> > xl; // Last current solution (parametric upper bound)
+		std::vector<int> jhuse; // Whether an item is assigned to a knapsack
+		std::vector<int> Uj; // Upper bound of father node before setting xh[i][j] = 1
 
 		void ParametricUpperBound(); // Compute parametric upper bound, if possible
 		void UpperBound(); // Compute upper bound

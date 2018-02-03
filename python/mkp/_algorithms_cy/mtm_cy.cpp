@@ -6,12 +6,6 @@
         "depends": [
             "cpp\\mtm_c.h"
         ],
-        "extra_compile_args": [
-            "-std=c++11"
-        ],
-        "extra_link_args": [
-            "-std=c++11"
-        ],
         "include_dirs": [
             "cpp/"
         ],

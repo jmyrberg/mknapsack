@@ -1,6 +1,9 @@
 """Algorithms for solving the Multiple Knapsack Problem."""
 
 
+from fractions import gcd
+from functools import reduce
+
 import numpy as np
 import pandas as pd
  
@@ -9,6 +12,10 @@ try:
 except:
     raise ImportError("Could not import module - most likely Cython / C++ "
                       "was not compiled properly")
+  
+  
+def greatest_common_divisor(l):
+    return reduce(gcd, l)
   
   
 def mtm(p, w, c):
@@ -44,15 +51,18 @@ def mtm(p, w, c):
     items = np.arange(len(p), dtype=int)
     ksacks = np.arange(len(c), dtype=int)
     
+    # Scale the problem
+    scale = greatest_common_divisor(w + c)
+    
     # Decreasing profit/weight ratio for items
     p_ar = np.array(p, dtype=int)
-    w_ar = np.array(w, dtype=int)
+    w_ar = np.array(w, dtype=int) / scale
     pw_ord = np.argsort(p_ar / w_ar)[::-1]
     pw_map = np.zeros(len(p), dtype=int)
     pw_map[pw_ord] = items
     
     # Increasing capacity for knapsacks
-    c_ar = np.array(c, dtype=int)
+    c_ar = np.array(c, dtype=int) / scale
     c_ord = np.argsort(c_ar)
     c_map = dict((i,v) for i,v in enumerate(c_ord))
     c_map[-1] = -1
@@ -73,8 +83,8 @@ def mtm(p, w, c):
     
     # Ensure solution validity
     x_ar = np.array(x)
-    df = pd.DataFrame({'i': x_ar, 'j': items, 'p': p_ar, 'w': w_ar})
-    df = df.merge(pd.DataFrame({'i': ksacks, 'c': c_ar}), on='i', how='left')
+    df = pd.DataFrame({'i': x_ar, 'j': items, 'p': p_ar, 'w': w_ar * scale})
+    df = df.merge(pd.DataFrame({'i': ksacks, 'c': c_ar * scale}), on='i', how='left')
     df['c'] = df['c'].fillna(-1).astype(int)
     df = df.groupby('i').agg({'p': np.sum, 'w': np.sum, 'c': np.max})
     df['valid'] = (df['c'] >= df['w']).astype(int)

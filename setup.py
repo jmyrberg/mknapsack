@@ -13,9 +13,7 @@ ext_modules += cythonize(Extension(
     "mkp._algorithms_cy.mtm_cy", 
     sources=["cpp/mtm_c.cpp","python/mkp/_algorithms_cy/mtm_cy.pyx"], 
     include_dirs=['cpp/'],
-    language='c++',
-    extra_compile_args=["-std=c++11"],
-    extra_link_args=["-std=c++11"]))
+    language='c++'))
 
 
 setup(name='mkp',

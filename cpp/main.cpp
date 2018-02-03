@@ -42,5 +42,12 @@ int main() {
 	MTM5.solve();
 	std::cout << std::endl << std::endl;
 
+	std::vector<int> profits6 = {63, 66, 65, 64, 64, 64, 64, 63, 64, 65, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6};
+	std::vector<int> weights6 = {420, 510, 510, 420, 420, 390, 420, 510, 420, 510, 270, 300, 330, 360, 390, 420, 450, 480, 510, 540, 570, 600};
+	std::vector<int> capacities6 = {1320, 1320, 1320, 1320};
+	MTMSolver MTM6(profits6, weights6, capacities6);
+	MTM6.solve();
+	std::cout << std::endl << std::endl;
+
 	return 0;
 }

@@ -75,6 +75,7 @@ def test_mtm():
     assert z == 841
     
     print('\n' + '-'*10 + ' TEST 06' + '-'*10)
+    start = time.clock()
     p = [78, 77, 35, 34, 89, 88, 36, 35, 94, 93, 75, 74, 74, 73, 79, 78, 80, 79, 16, 15, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
     w = [18, 18, 9, 9, 23, 23, 20, 20, 59, 59, 61, 61, 70, 70, 75, 75, 76, 76, 30, 30, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49]
     c = [80, 90, 100, 110]
@@ -120,6 +121,18 @@ def test_mtm():
     print('Number of backtracks performed: %d' % bt)
     print('Time spent: %.5f' % round(time.clock()-start,5))
     assert z == 615
+    
+    print('\n' + '-'*10 + ' TEST 10' + '-'*10)
+    start = time.clock()
+    p = [63, 66, 65, 64, 64, 64, 64, 63, 64, 65, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6]
+    w = [420, 510, 510, 420, 420, 390, 420, 510, 420, 510, 270, 300, 330, 360, 390, 420, 450, 480, 510, 540, 570, 600]
+    c = [1320, 1320, 1320, 1320]
+    z,x,bt = mtm(p, w, c)
+    print('Total profit: %d' % z)
+    print('Solution: %s' % x)
+    print('Number of backtracks performed: %d' % bt)
+    print('Time spent: %.5f' % round(time.clock()-start,5))
+    assert z == 649
     
     print('\nTotal time: %.5f' % round(time.clock()-start_tot,5))
     
