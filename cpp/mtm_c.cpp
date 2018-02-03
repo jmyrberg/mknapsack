@@ -50,11 +50,16 @@ std::tuple<int,std::vector<int>> SolveSingleKnapsack(int capacity, std::vector<i
 
 	// Run algorithm
 	int i, k;
-	std::vector<std::vector<int> > K(n+1, std::vector<int>(c+1));
+	//std::vector<std::vector<int> > K(n+1, std::vector<int>(c+1));
+	/*int ** K = new int*[n+1];
+    for (i = 0; i < n+1; i++)
+    	K[i] = new int[c+1];*/
+	int K[(n+1)*(c+1)]
 
 	// Build DP table
-	for (i = 0; i <= n; i++)
+	for (i = 0; i <= n; i++) {
 		K[i][0] = 0;
+	}
 	for (k = 0; k <= c; k++)
 		K[0][k] = 0;
 	for (i = 1; i <= n; i++)
@@ -82,6 +87,11 @@ std::tuple<int,std::vector<int>> SolveSingleKnapsack(int capacity, std::vector<i
 			}
 		}
 	}
+
+	/*for (i = 0; i < n+1; i++)
+		delete[] K[i];
+	delete[] K;*/
+
 	return std::make_tuple(K[n][c], picked);
 }
 
@@ -448,14 +458,14 @@ std::vector<int> MTMSolver::solve() {
 		}
 	} // heuristic
 	
-	std::vector<int> ret(n+2);
+	std::vector<int> res(n+2);
 	for (j = 0; j < n+2; j++) {
 		if (j < n)
-			ret[j] = x[j];
+			res[j] = x[j];
 		else if (j == n)
-			ret[j] = z;
+			res[j] = z;
 		else
-			ret[j] = bt;
+			res[j] = bt;
 	}
 
 	std::vector<int> ksack_weights(m);
@@ -476,6 +486,6 @@ std::vector<int> MTMSolver::solve() {
 	std::cout << "SOLUTION = " << z << std::endl;
 	std::cout << "BACKTRACKS = " << bt << std::endl;
 
-	return ret;
+	return res;
 }
 } // namespace
