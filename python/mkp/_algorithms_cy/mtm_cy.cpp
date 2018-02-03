@@ -993,6 +993,7 @@ static const char __pyx_k_main[] = "__main__";
 static const char __pyx_k_name[] = "__name__";
 static const char __pyx_k_test[] = "__test__";
 static const char __pyx_k_range[] = "range";
+static const char __pyx_k_max_bt[] = "max_bt";
 static const char __pyx_k_reduce[] = "__reduce__";
 static const char __pyx_k_getstate[] = "__getstate__";
 static const char __pyx_k_setstate[] = "__setstate__";
@@ -1007,6 +1008,7 @@ static PyObject *__pyx_n_s_c;
 static PyObject *__pyx_n_s_cline_in_traceback;
 static PyObject *__pyx_n_s_getstate;
 static PyObject *__pyx_n_s_main;
+static PyObject *__pyx_n_s_max_bt;
 static PyObject *__pyx_n_s_name;
 static PyObject *__pyx_kp_s_no_default___reduce___due_to_non;
 static PyObject *__pyx_n_s_p;
@@ -1018,7 +1020,7 @@ static PyObject *__pyx_n_s_setstate;
 static PyObject *__pyx_n_s_setstate_cython;
 static PyObject *__pyx_n_s_test;
 static PyObject *__pyx_n_s_w;
-static int __pyx_pf_3mkp_14_algorithms_cy_6mtm_cy_11cyMTMSolver___cinit__(struct __pyx_obj_3mkp_14_algorithms_cy_6mtm_cy_cyMTMSolver *__pyx_v_self, std::vector<int>  __pyx_v_p, std::vector<int>  __pyx_v_w, std::vector<int>  __pyx_v_c); /* proto */
+static int __pyx_pf_3mkp_14_algorithms_cy_6mtm_cy_11cyMTMSolver___cinit__(struct __pyx_obj_3mkp_14_algorithms_cy_6mtm_cy_cyMTMSolver *__pyx_v_self, std::vector<int>  __pyx_v_p, std::vector<int>  __pyx_v_w, std::vector<int>  __pyx_v_c, int __pyx_v_max_bt); /* proto */
 static PyObject *__pyx_pf_3mkp_14_algorithms_cy_6mtm_cy_11cyMTMSolver_2solve(struct __pyx_obj_3mkp_14_algorithms_cy_6mtm_cy_cyMTMSolver *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_3mkp_14_algorithms_cy_6mtm_cy_11cyMTMSolver_4__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_3mkp_14_algorithms_cy_6mtm_cy_cyMTMSolver *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_3mkp_14_algorithms_cy_6mtm_cy_11cyMTMSolver_6__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_3mkp_14_algorithms_cy_6mtm_cy_cyMTMSolver *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
@@ -1029,8 +1031,8 @@ static PyObject *__pyx_tuple__2;
 /* "mkp/_algorithms_cy/mtm_cy.pyx":15
  *     cdef MTMSolver *solver
  * 
- *     def __cinit__(self, vector[int] p, vector[int] w, vector[int] c):             # <<<<<<<<<<<<<<
- *         self.solver = new MTMSolver(p, w, c)
+ *     def __cinit__(self, vector[int] p, vector[int] w, vector[int] c, int max_bt):             # <<<<<<<<<<<<<<
+ *         self.solver = new MTMSolver(p, w, c, max_bt)
  * 
  */
 
@@ -1040,16 +1042,19 @@ static int __pyx_pw_3mkp_14_algorithms_cy_6mtm_cy_11cyMTMSolver_1__cinit__(PyObj
   std::vector<int>  __pyx_v_p;
   std::vector<int>  __pyx_v_w;
   std::vector<int>  __pyx_v_c;
+  int __pyx_v_max_bt;
   int __pyx_r;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__cinit__ (wrapper)", 0);
   {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_p,&__pyx_n_s_w,&__pyx_n_s_c,0};
-    PyObject* values[3] = {0,0,0};
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_p,&__pyx_n_s_w,&__pyx_n_s_c,&__pyx_n_s_max_bt,0};
+    PyObject* values[4] = {0,0,0,0};
     if (unlikely(__pyx_kwds)) {
       Py_ssize_t kw_args;
       const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
       switch (pos_args) {
+        case  4: values[3] = PyTuple_GET_ITEM(__pyx_args, 3);
+        CYTHON_FALLTHROUGH;
         case  3: values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
         CYTHON_FALLTHROUGH;
         case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
@@ -1068,45 +1073,53 @@ static int __pyx_pw_3mkp_14_algorithms_cy_6mtm_cy_11cyMTMSolver_1__cinit__(PyObj
         case  1:
         if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_w)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 3, 3, 1); __PYX_ERR(1, 15, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 4, 4, 1); __PYX_ERR(1, 15, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
         if (likely((values[2] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_c)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 3, 3, 2); __PYX_ERR(1, 15, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 4, 4, 2); __PYX_ERR(1, 15, __pyx_L3_error)
+        }
+        CYTHON_FALLTHROUGH;
+        case  3:
+        if (likely((values[3] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_max_bt)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 4, 4, 3); __PYX_ERR(1, 15, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
         if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__cinit__") < 0)) __PYX_ERR(1, 15, __pyx_L3_error)
       }
-    } else if (PyTuple_GET_SIZE(__pyx_args) != 3) {
+    } else if (PyTuple_GET_SIZE(__pyx_args) != 4) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
       values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
       values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
+      values[3] = PyTuple_GET_ITEM(__pyx_args, 3);
     }
     __pyx_v_p = __pyx_convert_vector_from_py_int(values[0]); if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 15, __pyx_L3_error)
     __pyx_v_w = __pyx_convert_vector_from_py_int(values[1]); if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 15, __pyx_L3_error)
     __pyx_v_c = __pyx_convert_vector_from_py_int(values[2]); if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 15, __pyx_L3_error)
+    __pyx_v_max_bt = __Pyx_PyInt_As_int(values[3]); if (unlikely((__pyx_v_max_bt == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 15, __pyx_L3_error)
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(1, 15, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 4, 4, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(1, 15, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("mkp._algorithms_cy.mtm_cy.cyMTMSolver.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return -1;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_3mkp_14_algorithms_cy_6mtm_cy_11cyMTMSolver___cinit__(((struct __pyx_obj_3mkp_14_algorithms_cy_6mtm_cy_cyMTMSolver *)__pyx_v_self), __pyx_v_p, __pyx_v_w, __pyx_v_c);
+  __pyx_r = __pyx_pf_3mkp_14_algorithms_cy_6mtm_cy_11cyMTMSolver___cinit__(((struct __pyx_obj_3mkp_14_algorithms_cy_6mtm_cy_cyMTMSolver *)__pyx_v_self), __pyx_v_p, __pyx_v_w, __pyx_v_c, __pyx_v_max_bt);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static int __pyx_pf_3mkp_14_algorithms_cy_6mtm_cy_11cyMTMSolver___cinit__(struct __pyx_obj_3mkp_14_algorithms_cy_6mtm_cy_cyMTMSolver *__pyx_v_self, std::vector<int>  __pyx_v_p, std::vector<int>  __pyx_v_w, std::vector<int>  __pyx_v_c) {
+static int __pyx_pf_3mkp_14_algorithms_cy_6mtm_cy_11cyMTMSolver___cinit__(struct __pyx_obj_3mkp_14_algorithms_cy_6mtm_cy_cyMTMSolver *__pyx_v_self, std::vector<int>  __pyx_v_p, std::vector<int>  __pyx_v_w, std::vector<int>  __pyx_v_c, int __pyx_v_max_bt) {
   int __pyx_r;
   __Pyx_RefNannyDeclarations
   mtm::MTMSolver *__pyx_t_1;
@@ -1114,13 +1127,13 @@ static int __pyx_pf_3mkp_14_algorithms_cy_6mtm_cy_11cyMTMSolver___cinit__(struct
 
   /* "mkp/_algorithms_cy/mtm_cy.pyx":16
  * 
- *     def __cinit__(self, vector[int] p, vector[int] w, vector[int] c):
- *         self.solver = new MTMSolver(p, w, c)             # <<<<<<<<<<<<<<
+ *     def __cinit__(self, vector[int] p, vector[int] w, vector[int] c, int max_bt):
+ *         self.solver = new MTMSolver(p, w, c, max_bt)             # <<<<<<<<<<<<<<
  * 
  *     def solve(self):
  */
   try {
-    __pyx_t_1 = new mtm::MTMSolver(__pyx_v_p, __pyx_v_w, __pyx_v_c);
+    __pyx_t_1 = new mtm::MTMSolver(__pyx_v_p, __pyx_v_w, __pyx_v_c, __pyx_v_max_bt);
   } catch(...) {
     __Pyx_CppExn2PyErr();
     __PYX_ERR(1, 16, __pyx_L1_error)
@@ -1130,8 +1143,8 @@ static int __pyx_pf_3mkp_14_algorithms_cy_6mtm_cy_11cyMTMSolver___cinit__(struct
   /* "mkp/_algorithms_cy/mtm_cy.pyx":15
  *     cdef MTMSolver *solver
  * 
- *     def __cinit__(self, vector[int] p, vector[int] w, vector[int] c):             # <<<<<<<<<<<<<<
- *         self.solver = new MTMSolver(p, w, c)
+ *     def __cinit__(self, vector[int] p, vector[int] w, vector[int] c, int max_bt):             # <<<<<<<<<<<<<<
+ *         self.solver = new MTMSolver(p, w, c, max_bt)
  * 
  */
 
@@ -1147,7 +1160,7 @@ static int __pyx_pf_3mkp_14_algorithms_cy_6mtm_cy_11cyMTMSolver___cinit__(struct
 }
 
 /* "mkp/_algorithms_cy/mtm_cy.pyx":18
- *         self.solver = new MTMSolver(p, w, c)
+ *         self.solver = new MTMSolver(p, w, c, max_bt)
  * 
  *     def solve(self):             # <<<<<<<<<<<<<<
  *         cdef list res = self.solver.solve()
@@ -1197,7 +1210,7 @@ static PyObject *__pyx_pf_3mkp_14_algorithms_cy_6mtm_cy_11cyMTMSolver_2solve(str
   goto __pyx_L0;
 
   /* "mkp/_algorithms_cy/mtm_cy.pyx":18
- *         self.solver = new MTMSolver(p, w, c)
+ *         self.solver = new MTMSolver(p, w, c, max_bt)
  * 
  *     def solve(self):             # <<<<<<<<<<<<<<
  *         cdef list res = self.solver.solve()
@@ -1619,6 +1632,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_cline_in_traceback, __pyx_k_cline_in_traceback, sizeof(__pyx_k_cline_in_traceback), 0, 0, 1, 1},
   {&__pyx_n_s_getstate, __pyx_k_getstate, sizeof(__pyx_k_getstate), 0, 0, 1, 1},
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
+  {&__pyx_n_s_max_bt, __pyx_k_max_bt, sizeof(__pyx_k_max_bt), 0, 0, 1, 1},
   {&__pyx_n_s_name, __pyx_k_name, sizeof(__pyx_k_name), 0, 0, 1, 1},
   {&__pyx_kp_s_no_default___reduce___due_to_non, __pyx_k_no_default___reduce___due_to_non, sizeof(__pyx_k_no_default___reduce___due_to_non), 0, 0, 1, 0},
   {&__pyx_n_s_p, __pyx_k_p, sizeof(__pyx_k_p), 0, 0, 1, 1},

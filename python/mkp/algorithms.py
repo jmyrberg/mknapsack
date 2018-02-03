@@ -18,13 +18,15 @@ def greatest_common_divisor(l):
     return reduce(gcd, l)
   
   
-def mtm(p, w, c):
+def mtm(p, w, c, max_bt=-1):
     """Solves Multiple 0-1 Knapsack Problem with MTM algorithm.
       
     Args:
         p (list): Item profits.
         w (list): Item weights.
         c (list): Knapsack capacities.
+        max_bt (int): Maximum number of backtracks to perform. Defaults to -1,
+            which is unlimited.
           
     Returns:
         x (list): Assigned knapsacks for each item. Knapsack '-1' indicates
@@ -47,6 +49,8 @@ def mtm(p, w, c):
     if len(p) != len(w):
         raise ValueError("Profit and weight lengths are not equal (%d != %d)" %
                          len(p),len(w))
+    if max_bt is None:
+        max_bt = -1
      
     items = np.arange(len(p), dtype=int)
     ksacks = np.arange(len(c), dtype=int)
@@ -73,7 +77,7 @@ def mtm(p, w, c):
     c_srt = c_ar[c_ord].tolist()
     
     # Solve
-    res = cyMTMSolver(p_srt, w_srt, c_srt).solve()
+    res = cyMTMSolver(p_srt, w_srt, c_srt, max_bt).solve()
     x = np.array(res[:-2])
     z = res[-2]
     bt = res[-1]
@@ -84,7 +88,8 @@ def mtm(p, w, c):
     # Ensure solution validity
     x_ar = np.array(x)
     df = pd.DataFrame({'i': x_ar, 'j': items, 'p': p_ar, 'w': w_ar * scale})
-    df = df.merge(pd.DataFrame({'i': ksacks, 'c': c_ar * scale}), on='i', how='left')
+    df = df.merge(pd.DataFrame({'i': ksacks, 'c': c_ar * scale}), 
+                  on='i', how='left')
     df['c'] = df['c'].fillna(-1).astype(int)
     df = df.groupby('i').agg({'p': np.sum, 'w': np.sum, 'c': np.max})
     df['valid'] = (df['c'] >= df['w']).astype(int)

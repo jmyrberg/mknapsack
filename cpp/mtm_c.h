@@ -26,6 +26,7 @@ class MTMSolver {
 		int n; // Number of items
 		int m; // Number of knapsacks
 		int bt; // Number of backtracks performed
+		int btl; // Maximum number of backtracks to perform
 
 		std::vector<int> xh; // Current solution
 		int z; // Current best solution value
@@ -55,7 +56,7 @@ class MTMSolver {
 		void LowerBound(); // Compute lower bound
 	
 	public:
-		MTMSolver(std::vector<int> profits, std::vector<int> weights, std::vector<int> capacities);
+		MTMSolver(std::vector<int> profits, std::vector<int> weights, std::vector<int> capacities, int max_backtracks = -1);
 		std::vector<int> solve(); // Run the algorithm
 };
 }

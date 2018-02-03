@@ -87,7 +87,7 @@ std::tuple<int,std::vector<int>> SolveSingleKnapsack(int capacity, std::vector<i
 }
 
 
-MTMSolver::MTMSolver(std::vector<int> profits, std::vector<int> weights, std::vector<int> capacities) {
+MTMSolver::MTMSolver(std::vector<int> profits, std::vector<int> weights, std::vector<int> capacities, int max_backtracks) {
 	p = profits;
 	w = weights;
 	c = capacities;
@@ -100,6 +100,7 @@ MTMSolver::MTMSolver(std::vector<int> profits, std::vector<int> weights, std::ve
 	U = 0;
 	Ur = 0;
 	bt = 0;
+	btl = max_backtracks;
 	ph = 0;
 
 	Ul = 0;
@@ -342,7 +343,6 @@ std::vector<int> MTMSolver::solve() {
 
 			// Update new solution value z and solution x
 			z = L;
-			std::cout << "z = " << z << " | U = " << U << " | L = " << L << std::endl;
 			for (j = 0; j < n; j++)
 				x[j] = -1;
 			for (k = 0; k < m; k++)
@@ -410,6 +410,8 @@ std::vector<int> MTMSolver::solve() {
 			heuristic = false;
 			backtrack = false;
 			bt++;
+			if (bt == btl)
+				break;
 			while (i >= 0) {
 				while (S[i].size() > 0) {
 					j = S[i].back();
@@ -455,7 +457,7 @@ std::vector<int> MTMSolver::solve() {
 			res[j] = bt;
 	}
 
-	std::vector<int> ksack_weights(m);
+	/*std::vector<int> ksack_weights(m);
 	for (k = 0; k < m; k++)
 		ksack_weights[k] = 0;
 	std::cout << "x =";
@@ -472,7 +474,7 @@ std::vector<int> MTMSolver::solve() {
 	}
 	std::cout << "SOLUTION = " << z << std::endl;
 	std::cout << "BACKTRACKS = " << bt << std::endl;
-
+	std::cout << "BACKTRACKS = " << btl << std::endl;*/
 	return res;
 }
 } // namespace
