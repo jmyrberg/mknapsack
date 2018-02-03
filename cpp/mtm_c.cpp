@@ -98,7 +98,7 @@ MTMSolver::MTMSolver(std::vector<int> profits, std::vector<int> weights, std::ve
 	i = 0;
 	L = 0;
 	U = 0;
-	Ur= 0;
+	Ur = 0;
 	bt = 0;
 	ph = 0;
 
@@ -110,8 +110,8 @@ MTMSolver::MTMSolver(std::vector<int> profits, std::vector<int> weights, std::ve
 	jhuse.resize(n);
 	Uj.resize(n);
 
-	xh.resize(m);
-	xt.resize(m);
+	xh.resize(n*m);
+	xt.resize(n*m);
 	xl.resize(n);
 	xr.resize(n);
 
@@ -122,9 +122,6 @@ MTMSolver::MTMSolver(std::vector<int> profits, std::vector<int> weights, std::ve
 		ct += c[k];
 
 		S[k] = {};
-
-		xh[k].resize(n);
-		xt[k].resize(n);
 	}
 	for (int j = 0; j < n; j++) {
 		x[j] = -1;
@@ -150,7 +147,7 @@ void MTMSolver::ParametricUpperBound() {
 		bool condl1 = true;
 		for (k = il; k <= i; k++)
 			for (j = 0; j < n; j++)
-				if ((xh[k][j] == 1) && (xl[j] == 0)) {
+				if ((xh[k*n + j] == 1) && (xl[j] == 0)) {
 					condl1 = false;
 					break;
 				}
@@ -176,7 +173,7 @@ void MTMSolver::ParametricUpperBound() {
 		bool condr1 = true;
 		for (k = 0; k <= i; k++)
 			for (j = 0; j < n; j++)
-				if ((xh[k][j] == 1) && (xr[j] == 0)) {
+				if ((xh[k*n + j] == 1) && (xr[j] == 0)) {
 					condr1 = false;
 					break;
 				}
@@ -280,8 +277,7 @@ void MTMSolver::LowerBound() {
 	int c_ = cr[i];
 	
 	// Initialize solution
-	for (k = 0; k < m; k++)
-		std::fill(xt[k].begin(), xt[k].end(), 0);
+	std::fill(xt.begin(), xt.end(), 0);
 	
 	k = i;
 
@@ -307,14 +303,14 @@ void MTMSolver::LowerBound() {
 		// Update solution for knapsack k
 		cnt = 0;
 		for (jit = N_.begin(); jit != N_.end(); jit++) {
-			xt[k][*jit] = xtt[cnt];
+			xt[k*n + (*jit)] = xtt[cnt];
 			cnt++;
 		}
 		L += z_;
 
 		// Remove solution items
 		for (j = 0; j < n; j++)
-			if (xt[k][j] == 1)
+			if (xt[k*n + j] == 1)
 				Nd.remove(j);
 		N_ = Nd;
 
@@ -351,10 +347,10 @@ std::vector<int> MTMSolver::solve() {
 				x[j] = -1;
 			for (k = 0; k < m; k++)
 				for (j = 0; j < n; j++)
-					x[j] = (xh[k][j] == 1) ? k : x[j];
+					x[j] = (xh[k*n + j] == 1) ? k : x[j];
 			for (k = i; k < m; k++)
 				for (j = 0; j < n; j++)
-					if (xt[k][j] == 1)
+					if (xt[k*n + j] == 1)
 						x[j] = k;
 			
 			// Optimal solution has been found globally
@@ -377,7 +373,7 @@ std::vector<int> MTMSolver::solve() {
 				// Add previous LB solution to node candidates
 				I = {};
 				for (l = 0; l < n; l++)
-					if (xt[i][l] == 1)
+					if (xt[i*n + l] == 1)
 						I.push_back(l);
 					
 				while (I.size() > 0) {
@@ -386,7 +382,7 @@ std::vector<int> MTMSolver::solve() {
 
 					// Add item j to current solution
 					S[i].push_back(j);
-					xh[i][j] = 1;
+					xh[i*n + j] = 1;
 					cr[i] -= w[j];
 					ph += p[j];
 					jhuse[j] = 1;
@@ -419,12 +415,12 @@ std::vector<int> MTMSolver::solve() {
 					j = S[i].back();
 					
 					// Backtracking was called with item not in the current solution
-					if (xh[i][j] == 0) {
+					if (xh[i*n + j] == 0) {
 						S[i].pop_back();
 					} else {	
 						
 						// Remove j from current solution
-						xh[i][j] = 0;
+						xh[i*n + j] = 0;
 						cr[i] += w[j];
 						ph -= p[j];
 						jhuse[j] = 0;

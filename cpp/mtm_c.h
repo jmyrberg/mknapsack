@@ -27,7 +27,7 @@ class MTMSolver {
 		int m; // Number of knapsacks
 		int bt; // Number of backtracks performed
 
-		std::vector<std::vector<int> > xh; // Current solution
+		std::vector<int> xh; // Current solution
 		int z; // Current best solution value
 		int i; // Current knapsack
 		int L; // Lower bound for current solution
@@ -44,7 +44,7 @@ class MTMSolver {
 		int cl; // Residual capacity of last solution (parametric upper bound)
 
 		std::vector<int> x; // Current best solution (knapsack for each item)
-		std::vector<std::vector<int> > xt; // Latest solution calculated in lower bound
+		std::vector<int> xt; // Latest solution calculated in lower bound
 
 		std::map<int,std::list<int> > S; // Unlabeled (=assigned) items for each knapsack
 		std::vector<int> jhuse; // Whether an item is assigned to a knapsack
