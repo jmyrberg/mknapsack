@@ -49,8 +49,8 @@ def mtm(p, w, c, max_bt=-1):
     if len(p) != len(w):
         raise ValueError("Profit and weight lengths are not equal (%d != %d)" %
                          len(p),len(w))
-    if max_bt is None:
-        max_bt = -1
+    if not isinstance(max_bt,int):
+        raise ValueError("Parameter 'max_bt' must of type 'int'")
      
     items = np.arange(len(p), dtype=int)
     ksacks = np.arange(len(c), dtype=int)

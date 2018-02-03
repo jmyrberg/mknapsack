@@ -15,7 +15,7 @@ int max(int a, int b) {
 }
 
 
-std::tuple<int,std::vector<int>> SolveSingleKnapsack(int capacity, std::vector<int> weights, std::vector<int> profits, int n_items, bool return_picked) {
+std::tuple<int,std::vector<int>> SolveSingleKnapsack(std::vector<int> profits, std::vector<int> weights, int capacity, int n_items) {
 
 	std::vector<int> p = profits;
 	std::vector<int> w = weights;
@@ -64,23 +64,21 @@ std::tuple<int,std::vector<int>> SolveSingleKnapsack(int capacity, std::vector<i
 
 	// Get picked up items as a vector
 	int wn;
-	if (return_picked) {
-		i = n;
-		k = c;
-		while (i > 0) {
-			wn = k - w[i-1];
-			if (wn >= 0) {
-				if (K[i*(c+1) + k] - K[(i-1)*(c+1) + wn] == p[i-1]) {
-					i--;
-					k -= w[i];
-					picked[idx2j[i]] = 1;
-				} else {
-					i--;
-					picked[idx2j[i]] = 0;
-				}
+	i = n;
+	k = c;
+	while (i > 0) {
+		wn = k - w[i-1];
+		if (wn >= 0) {
+			if (K[i*(c+1) + k] - K[(i-1)*(c+1) + wn] == p[i-1]) {
+				i--;
+				k -= w[i];
+				picked[idx2j[i]] = 1;
 			} else {
 				i--;
+				picked[idx2j[i]] = 0;
 			}
+		} else {
+			i--;
 		}
 	}
 	return std::make_tuple(K[n*(c+1) + c], picked);
@@ -130,7 +128,7 @@ MTMSolver::MTMSolver(std::vector<int> profits, std::vector<int> weights, std::ve
 		Uj[j] = -1;
 	}
 
-	auto sol = SolveSingleKnapsack(ct, w, p, n, true);
+	auto sol = SolveSingleKnapsack(p, w, ct, n);
 	U = std::get<0>(sol);
 	xr = std::get<1>(sol);
 	Ur= U;
@@ -231,7 +229,7 @@ void MTMSolver::UpperBound() {
 	std::vector<int> xtt(n_);
 	std::fill(xl.begin(), xl.end(), 0);
 	if (wt > c_) {
-		auto sol = SolveSingleKnapsack(c_, w_, p_, n_, true);
+		auto sol = SolveSingleKnapsack(p_, w_, c_, n_);
 		int z_ = std::get<0>(sol);
 		xtt = std::get<1>(sol);
 		U += z_;
@@ -297,7 +295,7 @@ void MTMSolver::LowerBound() {
 			cnt++;
 		}
 
-		auto sol = SolveSingleKnapsack(c_, w_, p_, n_, true);
+		auto sol = SolveSingleKnapsack(p_, w_, c_, n_);
 		z_ = std::get<0>(sol);
 		xtt = std::get<1>(sol);
 
