@@ -50,21 +50,17 @@ std::tuple<int,std::vector<int>> SolveSingleKnapsack(int capacity, std::vector<i
 
 	// Run algorithm
 	int i, k;
-	//std::vector<std::vector<int> > K(n+1, std::vector<int>(c+1));
-	/*int ** K = new int*[n+1];
-    for (i = 0; i < n+1; i++)
-    	K[i] = new int[c+1];*/
-	int K[(n+1)*(c+1)]
+	std::vector<int> K((n+1)*(c+1));
 
 	// Build DP table
 	for (i = 0; i <= n; i++) {
-		K[i][0] = 0;
+		K[i*(c+1) + 0] = 0;
 	}
 	for (k = 0; k <= c; k++)
-		K[0][k] = 0;
+		K[0*(c+1) + k] = 0;
 	for (i = 1; i <= n; i++)
 		for (k = 1; k <= c; k++)
-			K[i][k] = (w[i-1] <= k) ? max(p[i-1] + K[i-1][k-w[i-1]],  K[i-1][k]) : K[i-1][k];
+			K[i*(c+1) + k] = (w[i-1] <= k) ? max(p[i-1] + K[(i-1)*(c+1) + k-w[i-1]],  K[(i-1)*(c+1) + k]) : K[(i-1)*(c+1) + k];
 
 	// Get picked up items as a vector
 	int wn;
@@ -74,7 +70,7 @@ std::tuple<int,std::vector<int>> SolveSingleKnapsack(int capacity, std::vector<i
 		while (i > 0) {
 			wn = k - w[i-1];
 			if (wn >= 0) {
-				if (K[i][k] - K[i-1][wn] == p[i-1]) {
+				if (K[i*(c+1) + k] - K[(i-1)*(c+1) + wn] == p[i-1]) {
 					i--;
 					k -= w[i];
 					picked[idx2j[i]] = 1;
@@ -87,12 +83,7 @@ std::tuple<int,std::vector<int>> SolveSingleKnapsack(int capacity, std::vector<i
 			}
 		}
 	}
-
-	/*for (i = 0; i < n+1; i++)
-		delete[] K[i];
-	delete[] K;*/
-
-	return std::make_tuple(K[n][c], picked);
+	return std::make_tuple(K[n*(c+1) + c], picked);
 }
 
 
