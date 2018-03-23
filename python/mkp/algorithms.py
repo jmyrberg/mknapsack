@@ -18,7 +18,7 @@ def greatest_common_divisor(l):
     return reduce(gcd, l)
   
   
-def mtm(p, w, c, max_bt=-1):
+def mtm(p, w, c, max_bt=-1, max_time=3600):
     """Solves Multiple 0-1 Knapsack Problem with MTM algorithm.
       
     Args:
@@ -27,6 +27,8 @@ def mtm(p, w, c, max_bt=-1):
         c (list): Knapsack capacities.
         max_bt (int): Maximum number of backtracks to perform. Defaults to -1,
             which is unlimited.
+        max_time (int): Number of seconds after which the best solution so far
+            is returned. Defaults to 3600.
           
     Returns:
         x (list): Assigned knapsacks for each item. Knapsack '-1' indicates
@@ -51,6 +53,10 @@ def mtm(p, w, c, max_bt=-1):
                          len(p),len(w))
     if not isinstance(max_bt,int):
         raise ValueError("Parameter 'max_bt' must of type 'int'")
+    if not isinstance(max_time,int):
+        raise ValueError("Parameter 'max_time' must of type 'int'")
+    if max_time < 1:
+        raise ValueError("Parameter 'max_time' must be positive")
      
     items = np.arange(len(p), dtype=int)
     ksacks = np.arange(len(c), dtype=int)
@@ -77,7 +83,7 @@ def mtm(p, w, c, max_bt=-1):
     c_srt = c_ar[c_ord].tolist()
     
     # Solve
-    res = cyMTMSolver(p_srt, w_srt, c_srt, max_bt).solve()
+    res = cyMTMSolver(p_srt, w_srt, c_srt, max_bt, max_time).solve()
     x = np.array(res[:-2])
     z = res[-2]
     bt = res[-1]

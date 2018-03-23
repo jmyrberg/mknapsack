@@ -4,6 +4,7 @@
 #include <iterator>
 #include <vector>
 #include <math.h>
+#include <time.h>
 #include "mtm_c.h"
 
 
@@ -85,7 +86,7 @@ std::tuple<int,std::vector<int>> SolveSingleKnapsack(std::vector<int> profits, s
 }
 
 
-MTMSolver::MTMSolver(std::vector<int> profits, std::vector<int> weights, std::vector<int> capacities, int max_backtracks) {
+MTMSolver::MTMSolver(std::vector<int> profits, std::vector<int> weights, std::vector<int> capacities, int max_backtracks, int max_time) {
 	p = profits;
 	w = weights;
 	c = capacities;
@@ -99,6 +100,7 @@ MTMSolver::MTMSolver(std::vector<int> profits, std::vector<int> weights, std::ve
 	Ur = 0;
 	bt = 0;
 	btl = max_backtracks;
+    tl = max_time;
 	ph = 0;
 
 	Ul = 0;
@@ -131,7 +133,7 @@ MTMSolver::MTMSolver(std::vector<int> profits, std::vector<int> weights, std::ve
 	auto sol = SolveSingleKnapsack(p, w, ct, n);
 	U = std::get<0>(sol);
 	xr = std::get<1>(sol);
-	Ur= U;
+	Ur = U;
 }
 
 
@@ -326,126 +328,134 @@ std::vector<int> MTMSolver::solve() {
 	int k,l,j;
 	std::list<int> Si,I;
 	bool heuristic,update,backtrack,stop_update;
+    
+    clock_t start = clock() / CLOCKS_PER_SEC;
+    clock_t point = clock() / CLOCKS_PER_SEC;
+    
+    heuristic = true;
+    while (heuristic) {
+        
+        // HEURISTIC
+        update = true;
+        backtrack = true;
+        
+        LowerBound();
+        
+        // Current solution is better than any previous
+        if (L > z) {
+
+            // Update new solution value z and solution x
+            z = L;
+            for (j = 0; j < n; j++)
+                x[j] = -1;
+            for (k = 0; k < m; k++)
+                for (j = 0; j < n; j++)
+                    x[j] = (xh[k*n + j] == 1) ? k : x[j];
+            for (k = i; k < m; k++)
+                for (j = 0; j < n; j++)
+                    if (xt[k*n + j] == 1)
+                        x[j] = k;
+            
+            // Optimal solution has been found globally
+            if (z == Ur) {
+                break; // stop search
+            }
+            
+            // Best solution has been found for the current node
+            if (z == U) {
+                backtrack = true;
+                update = false; // go to backtrack
+            }
+        }
+        
+        // UPDATE
+        if (update) {
+            stop_update = false;
+            while (i < m - 1) {
+                
+                // Add previous LB solution to node candidates
+                I = {};
+                for (l = 0; l < n; l++)
+                    if (xt[i*n + l] == 1)
+                        I.push_back(l);
+                    
+                while (I.size() > 0) {
+                    j = *std::min_element(I.begin(), I.end());
+                    I.remove(j);
+
+                    // Add item j to current solution
+                    S[i].push_back(j);
+                    xh[i*n + j] = 1;
+                    cr[i] -= w[j];
+                    ph += p[j];
+                    jhuse[j] = 1;
+                    Uj[j] = U;
+
+                    ParametricUpperBound();
+
+                    // Current solution cannot be better than the best solution so far
+                    if (U <= z) {
+                        break; // go to backtrack
+                    }
+                }
+                if (stop_update)
+                    break;
+                else
+                    i++;
+            }
+            if ((i == m - 1) && (!stop_update))
+                i = m - 2;
+        }
+        
+        // BACKTRACK
+        if (backtrack) {
+            point = clock() / CLOCKS_PER_SEC;
+            if (point - start > tl) { // Time is up!
+                heuristic = false;
+                break;
+            }
+            heuristic = false;
+            backtrack = false;
+            bt++;
+            if (bt == btl)
+                break;
+            while (i >= 0) {
+                while (S[i].size() > 0) {
+                    j = S[i].back();
+                    
+                    // Backtracking was called with item not in the current solution
+                    if (xh[i*n + j] == 0) {
+                        S[i].pop_back();
+                    } else {	
+                        
+                        // Remove j from current solution
+                        xh[i*n + j] = 0;
+                        cr[i] += w[j];
+                        ph -= p[j];
+                        jhuse[j] = 0;
+
+                        U = Uj[j];
+
+                        // Current solution is better than the best solution so far
+                        if (U > z) {
+                            heuristic = true; // go to heuristic
+                            break;
+                        }
+                    }
+                    
+                }
+                if (heuristic)
+                    break;
+                else {
+                    i--;
+                    il -= 1;
+                }
+            }
+        }
+    } // heuristic
 	
-	heuristic = true;
-	while (heuristic) {
-		
-		// HEURISTIC
-		update = true;
-		backtrack = true;
-		
-		LowerBound();
-		
-		// Current solution is better than any previous
-		if (L > z) {
-
-			// Update new solution value z and solution x
-			z = L;
-			for (j = 0; j < n; j++)
-				x[j] = -1;
-			for (k = 0; k < m; k++)
-				for (j = 0; j < n; j++)
-					x[j] = (xh[k*n + j] == 1) ? k : x[j];
-			for (k = i; k < m; k++)
-				for (j = 0; j < n; j++)
-					if (xt[k*n + j] == 1)
-						x[j] = k;
-			
-			// Optimal solution has been found globally
-			if (z == Ur) {
-				break; // stop search
-			}
-			
-			// Best solution has been found for the current node
-			if (z == U) {
-				backtrack = true;
-				update = false; // go to backtrack
-			}
-		}
-		
-		// UPDATE
-		if (update) {
-			stop_update = false;
-			while (i < m - 1) {
-				
-				// Add previous LB solution to node candidates
-				I = {};
-				for (l = 0; l < n; l++)
-					if (xt[i*n + l] == 1)
-						I.push_back(l);
-					
-				while (I.size() > 0) {
-					j = *std::min_element(I.begin(), I.end());
-					I.remove(j);
-
-					// Add item j to current solution
-					S[i].push_back(j);
-					xh[i*n + j] = 1;
-					cr[i] -= w[j];
-					ph += p[j];
-					jhuse[j] = 1;
-					Uj[j] = U;
-
-					ParametricUpperBound();
-
-					// Current solution cannot be better than the best solution so far
-					if (U <= z) {
-						stop_update = true; // go to backtrack
-						break;
-					}
-				}
-				if (stop_update)
-					break;
-				else
-					i++;
-			}
-			if ((i == m - 1) && (!stop_update))
-				i = m - 2;
-		}
-		
-		// BACKTRACK
-		if (backtrack) {
-			heuristic = false;
-			backtrack = false;
-			bt++;
-			if (bt == btl)
-				break;
-			while (i >= 0) {
-				while (S[i].size() > 0) {
-					j = S[i].back();
-					
-					// Backtracking was called with item not in the current solution
-					if (xh[i*n + j] == 0) {
-						S[i].pop_back();
-					} else {	
-						
-						// Remove j from current solution
-						xh[i*n + j] = 0;
-						cr[i] += w[j];
-						ph -= p[j];
-						jhuse[j] = 0;
-
-						U = Uj[j];
-
-						// Current solution is better than the best solution so far
-						if (U > z) {
-							heuristic = true; // go to heuristic
-							break;
-						}
-					}
-					
-				}
-				if (heuristic)
-					break;
-				else {
-					i--;
-					il -= 1;
-				}
-			}
-		}
-	} // heuristic
 	
-	std::vector<int> res(n+2);
+    std::vector<int> res(n+2);
 	for (j = 0; j < n+2; j++) {
 		if (j < n)
 			res[j] = x[j];
