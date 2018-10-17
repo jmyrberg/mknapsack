@@ -26,10 +26,11 @@ How should we assign these items to knapsacks in order to maximize the profit?
 ```python
 from mkp.algorithms import mtm
 
-z,x,bt = mtm(profits, weights, capacities)
+z,x,bt,glopt = mtm(profits, weights, capacities)
 print('Total profit: %d' % z)
 print('Solution: %s' % x)
 print('Number of backtracks performed: %d' % bt)
+print('Global optimum: %s' % glopt)
 ```
 
 ## References

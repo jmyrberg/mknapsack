@@ -51,6 +51,8 @@ class MTMSolver {
 		std::map<int,std::list<int> > S; // Unlabeled (=assigned) items for each knapsack
 		std::vector<int> jhuse; // Whether an item is assigned to a knapsack
 		std::vector<int> Uj; // Upper bound of father node before setting xh[i][j] = 1
+        
+        bool glopt; // Indicates whether current solution is guaranteed to be global optimum or not
 
 		void ParametricUpperBound(); // Compute parametric upper bound, if possible
 		void UpperBound(); // Compute upper bound

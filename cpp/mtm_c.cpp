@@ -90,6 +90,8 @@ MTMSolver::MTMSolver(std::vector<int> profits, std::vector<int> weights, std::ve
 	p = profits;
 	w = weights;
 	c = capacities;
+    
+    glopt = true;
 
 	n = profits.size();
 	m = capacities.size();
@@ -411,14 +413,17 @@ std::vector<int> MTMSolver::solve() {
         if (backtrack) {
             point = clock() / CLOCKS_PER_SEC;
             if (point - start > tl) { // Time is up!
+                glopt = false;
                 heuristic = false;
                 break;
             }
             heuristic = false;
             backtrack = false;
             bt++;
-            if (bt == btl)
+            if (bt == btl) {
+                glopt = false;
                 break;
+            }
             while (i >= 0) {
                 while (S[i].size() > 0) {
                     j = S[i].back();
@@ -454,15 +459,16 @@ std::vector<int> MTMSolver::solve() {
         }
     } // heuristic
 	
-	
-    std::vector<int> res(n+2);
-	for (j = 0; j < n+2; j++) {
+    std::vector<int> res(n+3);
+	for (j = 0; j < n+3; j++) {
 		if (j < n)
 			res[j] = x[j];
-		else if (j == n)
-			res[j] = z;
+        else if (j == n-2)
+            res[j] = glopt;
+        else if (j == n-1)
+            res[j] = bt;
 		else
-			res[j] = bt;
+			res[j] = z;
 	}
 
 	/*std::vector<int> ksack_weights(m);

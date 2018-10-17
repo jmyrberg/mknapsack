@@ -33,6 +33,7 @@ def mtm(p, w, c, max_bt=-1, max_time=3600):
     Returns:
         x (list): Assigned knapsacks for each item. Knapsack '-1' indicates
             that the item is not assigned to any knapsack.
+        glopt (bool): Whether the given solution is guaranteed to be global optimum or not.
         z (int): Total profit.
         bt (int): Number of backtracks performed by the algorithm.
       
@@ -43,7 +44,6 @@ def mtm(p, w, c, max_bt=-1, max_time=3600):
         S. Martello, P. Toth
         A Bound and Bound algorithm for the zero-one multiple knapsack problem
         Discrete Applied Mathematics, 3 (1981), pp. 257-288
-          
     """
     # Validate inputs
     if not all(isinstance(vec,list) for vec in [p,w,c]):
@@ -84,7 +84,8 @@ def mtm(p, w, c, max_bt=-1, max_time=3600):
     
     # Solve
     res = cyMTMSolver(p_srt, w_srt, c_srt, max_bt, max_time).solve()
-    x = np.array(res[:-2])
+    x = np.array(res[:-3])
+    glopt = res[-3]
     z = res[-2]
     bt = res[-1]
     
@@ -105,4 +106,4 @@ def mtm(p, w, c, max_bt=-1, max_time=3600):
     if df['valid'].sum() != ksacks.shape[0]:
         raise ValueError("Solution not valid:\n%s" % df)
     
-    return z,x,bt
+    return z,x,bt,glopt
