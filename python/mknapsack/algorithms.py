@@ -1,7 +1,7 @@
 """Algorithms for solving the Multiple Knapsack Problem."""
 
 
-from fractions import gcd
+from math import gcd
 from functools import reduce
 
 import numpy as np
@@ -32,12 +32,12 @@ def mtm(p, w, c, max_bt=-1, max_time=3600):
 
     Returns:
         Tuple of the following:
+        z (int): Total profit.
         x (list): Assigned knapsacks for each item. Knapsack '-1' indicates
             that the item is not assigned to any knapsack.
+        bt (int): Number of backtracks performed by the algorithm.
         glopt (bool): Whether the given solution is guaranteed to be global
             optimum or not.
-        z (int): Total profit.
-        bt (int): Number of backtracks performed by the algorithm.
 
     Raises:
         ValueError, if inputs are of incorrect type or size.
@@ -51,8 +51,8 @@ def mtm(p, w, c, max_bt=-1, max_time=3600):
     if not all(isinstance(vec, list) for vec in [p, w, c]):
         raise ValueError('All inputs are not of type "list"')
     if len(p) != len(w):
-        raise ValueError('Profit and weight lengths are not equal (%d != %d)'
-                         % len(p), len(w))
+        raise ValueError('Profit and weight lengths are not equal'
+                         f'({len(p)} != {len(w)})')
     if not isinstance(max_bt, int):
         raise ValueError('Parameter ``max_bt`` must of type "int"')
     if not isinstance(max_time, int):
