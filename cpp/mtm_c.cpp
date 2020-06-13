@@ -463,12 +463,12 @@ std::vector<int> MTMSolver::solve() {
 	for (j = 0; j < n+3; j++) {
 		if (j < n)
 			res[j] = x[j];
-        else if (j == n-2)
+        else if (j == n)
             res[j] = glopt;
-        else if (j == n-1)
-            res[j] = bt;
+        else if (j == n+1)
+            res[j] = z;
 		else
-			res[j] = z;
+			res[j] = bt;
 	}
 
 	/*std::vector<int> ksack_weights(m);
