@@ -22,6 +22,7 @@ setup(
     license='MIT',
     description='Algorithms for Multiple Knapsack Problem (MKP)',
     long_description=long_description,
+    long_description_content_type='text/markdown',
     author='Jesse Myrberg',
     author_email='jesse.myrberg@gmail.com',
     url='https://github.com/jmyrberg/mknapsack',
