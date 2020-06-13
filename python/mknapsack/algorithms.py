@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 
 try:
-    from mkp._algorithms_cy.mtm_cy import cyMTMSolver
+    from mknapsack._algorithms_cy.mtm_cy import cyMTMSolver
 except ModuleNotFoundError:
     raise ImportError('Could not import module - most likely Cython / C++ '
                       'was not compiled properly')

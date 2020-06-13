@@ -3,7 +3,7 @@
 
 import pytest
 
-from mkp.algorithms import mtm  # Compile the latest version inplace
+from mknapsack.algorithms import mtm  # Compile the latest version inplace
 
 
 @pytest.mark.parametrize(

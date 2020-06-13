@@ -9,22 +9,22 @@ with open('VERSION', 'r') as f:
 
 ext_modules = []
 ext_modules += [Extension(
-    "mkp._algorithms_cy.mtm_cy",
-    sources=["cpp/mtm_c.cpp", "python/mkp/_algorithms_cy/mtm_cy.pyx"],
+    "mknapsack._algorithms_cy.mtm_cy",
+    sources=["cpp/mtm_c.cpp", "python/mknapsack/_algorithms_cy/mtm_cy.pyx"],
     include_dirs=['cpp/'],
     language='c++',
     extra_compile_args=["-std=c++1y"]
 )]
 
 setup(
-    name='mkp',
+    name='mknapsack',
     version=version,
     license='MIT',
     description='Algorithms for Multiple Knapsack Problem (MKP)',
     long_description=long_description,
     author='Jesse Myrberg',
     author_email='jesse.myrberg@gmail.com',
-    url='https://github.com/jmyrberg/mkp',
+    url='https://github.com/jmyrberg/mknapsack',
     keywords=['algorithm', 'multiple', 'knapsack', 'optimization'],
     setup_requires=[
         'cython>=0.26.1'
@@ -34,9 +34,9 @@ setup(
         'numpy>=1.13.3',
         'pandas>=0.20.3'
     ],
-    packages=['mkp', 'mkp._algorithms_cy'],
+    packages=['mknapsack', 'mknapsack._algorithms_cy'],
     package_dir={
-        'mkp': 'python/mkp',
+        'mknapsack': 'python/mknapsack',
     },
     ext_modules=ext_modules,
     classifiers=[

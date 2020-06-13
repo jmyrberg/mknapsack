@@ -34,7 +34,7 @@ jobs:
         file_glob: true
         on:
           branch: master
-          repo: jmyrberg/mkp
+          repo: jmyrberg/mknapsack
       after_success:
         - git push --tags
     - stage: deploy
@@ -50,8 +50,7 @@ jobs:
           secure: eSsPm8luxzm/eXcASyewQpfTxiIwkDWsPMwPyaflyMcr+m5pnqOhhUe9yEcWfhzq2i0qfCrWiWnFkkwTvjO4JwQKV2+FGEsMoHC5zl+pL/xDJpVHKJq/8xF+G4QaCNCFNJEmG20fhOd2pxCd3VoZ3oeegcL0E62tsHC5gTl34ZJDLjao9oHtBJVhqXIUKLQDG6TdZtIlBO644bS2qGhzAPk6vO1im/1kf36dq+mMyUmTPnUH2rRvbG8kijM0KPcWm4nkEqL1LtXaar7NSgBuh1lUhd6kJhMXsup6eedCNYkKu9J0NI0ulhMIceuFFiOyI6hX2osYpFXSivIeWbSgAD6Lcx///n/wbiK9rz7Q5kYDhaVOqeZVjTOYM/PhXJOD8VmMggymcl9Fu0WpBeBl2DQrRf7iazlaasHW0yr91foyL4lDhDKPU7gLSCGFziugeGcixr26CsAfMnK1g96mKgb3zpGyn4KNL0lzPraGIIwvADJcS1qOLNbhMb08DGeVS4rXmMKdbFGXHc57j7lOuUNEgnGRPZ8gL/UeNhT8lpEjQ0lJXp6nugFIEJ7S0l6ZlOmkjhKW8vJyOhq2xCQNmtl+BLmvIbXZtaQMzgxrLTEB11RmMQwkLQQ8V3WM4Tyi+DMWkdYBs10l8I8tg7pQfrVRRkynHAou100nlMXSDtY=
         on:
           branch: master
-          # tags: true // not recognized for some reason
-          repo: jmyrberg/mkp
+          repo: jmyrberg/mknapsack
 stages:
   - name: test
     if: type IN (pull_request, cron, api)

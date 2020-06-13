@@ -1,4 +1,4 @@
-# mkp
+# mknapsack
 
 Algorithms for solving the [Multiple 0-1 Knapsack Problem](http://www.or.deis.unibo.it/kp/Chapter6.pdf) (MKP).
 Currently, only the [MTM algorithm by S. Martello and P. Toth (1981)](https://www.sciencedirect.com/science/article/pii/0166218X81900056) is implemented, 
@@ -7,7 +7,7 @@ which guarantees an exact solution. This repository contains a Python interface 
 
 ## Installation
 
-`pip install mkp`
+`pip install mknapsack`
 
 
 ## Example usage
@@ -27,7 +27,7 @@ capacities = [90, 100]
 How should we assign these items to knapsacks in order to maximize the profit?
 
 ```python
-from mkp.algorithms import mtm
+from mknapsack.algorithms import mtm
 
 z, x, bt, glopt = mtm(profits, weights, capacities)
 print('Total profit: %d' % z)
