@@ -1,0 +1,61 @@
+language: python
+python:
+        - '3.8'
+os:
+  - linux
+branches:
+  only: 
+    - master
+install:
+  - pip install -r requirements.txt -r requirements-dev.txt
+script: pytest -v
+jobs:
+  include:
+    - stage: test
+    - stage: release
+      install: skip
+      script: skip
+      python: '3.8'
+      before_deploy:
+        - export RELEASE_VERSION=$( cat VERSION )
+        - git config --local user.name "jmyrberg"
+        - git config --local user.email "jesse.myrberg@gmail.com"
+        - git tag $RELEASE_VERSION
+      deploy:
+        provider: releases
+        name: Version $RELEASE_VERSION
+        tag_name: "$RELEASE_VERSION"
+        cleanup: false
+        prerelease: true
+        token:
+          secure: R0hmX8m1t+mMv/nBAlMETiKDbS2SXyKVutfm0FS5u5X41bSpNmEKSh4/CqGptRJ6G/DC1jtZUu3Q2vYu7nKyFkBphCmhQ9YNx0alz4X9u3j69Z4gPrrxlOoKi0SBUwUgYFkCsqaElaZ5WoZq+jOoYpLP9dE6bQdexxlYZP3kC2VcXcN7aUdrVt/nA0sSJ3OGz4AI7xzXu6w8zg/NP0MSABdh+5l59R6fJl4mAtdEJMOAMvJomBHxTykSFYToafX1xHEY8SGh4eR+NWVPwpiUK27yCTLGb9us7o509wIkJgDq8OJ00UtOWqa9v2lYlxKREe+DCoBL+ALG2jukOjWETaLf7GQrXiNrHSVGO4BUzENeeXzNppSkAwBQc02GT2pI7T+0QvUJ3TNmF6qzzbWGFI9o2LsS/hV4Ji86BlbeJQpmCGcBTo8LlphZFYHhYvwcmLCIk78cTlLjCRoE7F7Uar0/bdTsPp/uXtLKKLZIRXsTBw93bMHB6BgVmyYLnylRFjCqhgHZeSAm2hZ58LmW8Sy6nKbhL308yuD0RpmcPDpIEzS2CG3Myref2nT1rif+jTrVMMTFwgdqkjhpCQ4rjAmlCc3OmFRi3/56KoAKU//hyYlg3nerejvkY0RVCOHPWldWUVU0AliFc5IzGZ8qaO1k5oqBzEqLMnF/Fk8BxuU=
+        file:
+        - dist/*.tar.gz
+        file_glob: true
+        on:
+          branch: master
+          repo: jmyrberg/mkp
+      after_success:
+        - git push --tags
+    - stage: deploy
+      install: skip
+      script: skip
+      python: '3.8'
+      deploy:
+        provider: pypi
+        username: jmyrberg
+        distributions: sdist
+        cleanup: false
+        password:
+          secure: eSsPm8luxzm/eXcASyewQpfTxiIwkDWsPMwPyaflyMcr+m5pnqOhhUe9yEcWfhzq2i0qfCrWiWnFkkwTvjO4JwQKV2+FGEsMoHC5zl+pL/xDJpVHKJq/8xF+G4QaCNCFNJEmG20fhOd2pxCd3VoZ3oeegcL0E62tsHC5gTl34ZJDLjao9oHtBJVhqXIUKLQDG6TdZtIlBO644bS2qGhzAPk6vO1im/1kf36dq+mMyUmTPnUH2rRvbG8kijM0KPcWm4nkEqL1LtXaar7NSgBuh1lUhd6kJhMXsup6eedCNYkKu9J0NI0ulhMIceuFFiOyI6hX2osYpFXSivIeWbSgAD6Lcx///n/wbiK9rz7Q5kYDhaVOqeZVjTOYM/PhXJOD8VmMggymcl9Fu0WpBeBl2DQrRf7iazlaasHW0yr91foyL4lDhDKPU7gLSCGFziugeGcixr26CsAfMnK1g96mKgb3zpGyn4KNL0lzPraGIIwvADJcS1qOLNbhMb08DGeVS4rXmMKdbFGXHc57j7lOuUNEgnGRPZ8gL/UeNhT8lpEjQ0lJXp6nugFIEJ7S0l6ZlOmkjhKW8vJyOhq2xCQNmtl+BLmvIbXZtaQMzgxrLTEB11RmMQwkLQQ8V3WM4Tyi+DMWkdYBs10l8I8tg7pQfrVRRkynHAou100nlMXSDtY=
+        on:
+          branch: master
+          # tags: true // not recognized for some reason
+          repo: jmyrberg/mkp
+stages:
+  - name: test
+    if: type IN (pull_request, cron, api)
+  - name: release
+    if: type IN (push)
+  - name: deploy
+    if: type IN (push)
