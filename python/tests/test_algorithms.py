@@ -109,3 +109,23 @@ def test_mtm(params):
     assert z == expected_z
     if expected_x:
         assert x == expected_x
+
+
+def test_mtm_fail():
+    # ValueError, when non-equal length
+    try:
+        mtm(p=[1, 2, 3, 4], w=[1, 5], c=[5])
+        assert False
+    except ValueError:
+        assert True
+    except Exception:
+        assert False
+
+    # Non-list inputs
+    try:
+        mtm(p=[1, 2, 3, 4], w=[1, 5], c=5)
+        assert False
+    except ValueError:
+        assert True
+    except Exception:
+        assert False
