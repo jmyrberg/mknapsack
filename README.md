@@ -13,6 +13,7 @@ which guarantees an exact solution. This repository contains a Python interface 
 
 
 ## Example usage
+
 Given ten items with the following profits and weights:
 
 ```python
