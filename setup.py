@@ -41,7 +41,7 @@ setup(
     },
     ext_modules=ext_modules,
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 5 - Production/Stable',
         'Programming Language :: Python :: 3',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License'
