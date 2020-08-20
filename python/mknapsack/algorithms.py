@@ -105,7 +105,7 @@ def mtm(p, w, c, max_bt=-1, max_time=3600):
     if z != df.loc[df.index >= 0, 'p'].sum():
         raise ValueError('Solution value not matching the profits of '
                          'chosen items')
-    if df['valid'].sum() != ksacks.shape[0]:
+    if df['valid'].sum() != df.loc[df.index >= 0].shape[0]:
         raise ValueError('Solution not valid:\n%s' % df)
 
     return z, x, bt, glopt
