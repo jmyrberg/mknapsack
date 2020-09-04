@@ -99,6 +99,13 @@ from mknapsack.algorithms import mtm  # Compile the latest version inplace
             'c': [1320, 1320, 1320, 1320],
             'z': 649,
             'x': None
+        },
+        {
+            'p': [1, 1],
+            'w': [1, 1],
+            'c': [2, 2],
+            'z': 2,
+            'x': None
         }
     ]
 )
