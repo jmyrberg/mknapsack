@@ -1,6 +1,6 @@
 # mknapsack
 
-[![Build Status](https://travis-ci.com/jmyrberg/mkp.svg?branch=master)](https://travis-ci.com/jmyrberg/mkp)
+[![Build Status](https://travis-ci.com/jmyrberg/mknapsack.svg?branch=master)](https://travis-ci.com/jmyrberg/mknapsack)
 
 Algorithms for solving the [Multiple 0-1 Knapsack Problem](http://www.or.deis.unibo.it/kp/Chapter6.pdf) (MKP).
 Currently, only the [MTM algorithm by S. Martello and P. Toth (1981)](https://www.sciencedirect.com/science/article/pii/0166218X81900056) is implemented, 
