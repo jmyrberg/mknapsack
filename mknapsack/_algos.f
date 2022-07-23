@@ -5526,6 +5526,10 @@ c
 c all the parameters are integer. on return of mt1 all the input
 c parameters are unchanged.
 c
+cf2py intent(in) n, p, w, c, jdim, jck
+cf2py intent(hide) xx, min, psign, wsign, zsign
+cf2py intent(out) z, x
+Cf2py depend(jdim) p, w, x, xx, min, psign, wsign, zsign
       integer p(jdim),w(jdim),x(jdim),c,z
       integer xx(jdim),min(jdim),psign(jdim),wsign(jdim),zsign(jdim)
       integer ch,chs,diff,profit,r,t
@@ -6117,6 +6121,10 @@ c
 c all the parameters but ra are integer. on return of mt2 all the
 c input parameters are unchanged.
 c
+cf2py intent(in) n, p, w, c, jdim, jfo, jfs, jck
+cf2py intent(hide) ia1, ia2, ia3, ia4, ra
+cf2py intent(out) z, x, jub
+Cf2py depend(jdim) p, w, x, ia1, ia2, ia3, ia4, ra
       integer p(jdim),w(jdim),x(jdim),c,z
       integer ia1(jdim),ia2(jdim),ia3(jdim),ia4(jdim)
       real    ra(jdim)
