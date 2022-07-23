@@ -7,6 +7,7 @@
 
 Solving knapsack problems with Python using algorithms by [Martello and Toth](https://dl.acm.org/doi/book/10.5555/98124):
 
+* Single 0-1 knapsack problem: MT1, MT2
 * Multiple 0-1 knapsack problem: MTM, MTHM
 
 Documentation is available [here](https://mknapsack.readthedocs.io).
@@ -27,6 +28,22 @@ Documentation is available [here](https://mknapsack.readthedocs.io).
 
 
 ## Example usage
+
+### Single 0-1 Knapsack Problem
+
+```python
+from mknapsack import solve_single_knapsack
+
+# Given ten items with the following profits and weights:
+profits = [78, 35, 89, 36, 94, 75, 74, 79, 80, 16]
+weights = [18, 9, 23, 20, 59, 61, 70, 75, 76, 30]
+
+# ...and a knapsack with the following capacity:
+capacity = 190
+
+# Assign items into the knapsack while maximizing profit
+res = solve_single_knapsack(profits, weights, capacity)
+```
 
 ### Multiple 0-1 Knapsack Problem
 

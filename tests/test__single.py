@@ -1,177 +1,138 @@
-"""Test cases for multiple knapsack problems."""
+"""Test cases for single knapsack problems."""
 
 
 import pandas as pd
 import pytest
 
-from mknapsack._multiple import solve_multiple_knapsack
+from mknapsack._single import solve_single_knapsack
 from mknapsack._exceptions import FortranInputCheckError
 
 
-multiple_knapsack_case_small = {
+single_knapsack_case_small = {
     'case': 'small',
     'profits': [78, 35, 89, 36, 94, 75, 74, 100, 80, 16],
     'weights': [18, 9, 23, 20, 59, 61, 70, 75, 76, 30],
-    'capacities': [90, 100],
+    'capacity': 190,
     'total_profit': 407,
-    'solution': [2, 1, 2, 1, 2, 1, 0, 0, 0, 0]
+    'solution': [1, 1, 1, 1, 1, 1, 0, 0, 0, 0]
 }
 
-multiple_knapsack_case_medium = {
+single_knapsack_case_medium = {
     'case': 'medium',
     'profits': [78, 35, 89, 36, 94, 75, 74, 100, 80, 16] * 5,
     'weights': [18, 9, 23, 20, 59, 61, 70, 75, 76, 30] * 5,
-    'capacities': [90, 100] * 2,
+    'capacity': 190 * 2,
     'total_profit': 1213,
-    'solution': [1, 0, 3, 0, 0, 0, 0, 0, 0, 0, 3, 4, 2, 2, 4, 0, 0, 0, 0, 0, 3,
-                 2, 4, 1, 0, 0, 0, 0, 0, 0, 2, 4, 3, 2, 0, 0, 0, 0, 0, 0, 3, 1,
+    'solution': [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1,
+                 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1,
                  1, 1, 0, 0, 0, 0, 0, 0]
 }
 
-multiple_knapsack_case_large = {
+single_knapsack_case_large = {
     'case': 'large',
     'profits': [78, 35, 89, 36, 94, 75, 74, 100, 80, 16] * 100_000,
     'weights': [18, 9, 23, 20, 59, 61, 70, 75, 76, 30] * 100_000,
-    'capacities': [90, 100] * 500,
+    'capacity': 190 * 500,
     'total_profit': None,  # We just want some solution
     'solution': None
 }
 
-multiple_knapsack_success_cases = [
+single_knapsack_success_cases = [
     {
-        'method': 'mtm',
-        **multiple_knapsack_case_small,
+        'method': 'mt1',
+        **single_knapsack_case_small
     },
     {
-        'method': 'mtm',
-        **multiple_knapsack_case_small,
+        'method': 'mt1',
+        **single_knapsack_case_small,
         'verbose': True
     },
     {
-        'method': 'mtm',
-        **multiple_knapsack_case_medium,
+        'method': 'mt1',
+        **single_knapsack_case_medium
     },
     {
-        'method': 'mtm',
-        'method_kwargs': {'max_backtracks': 20},
-        **multiple_knapsack_case_small,
-        'tolerance': 0.97
+        'method': 'mt2',
+        **single_knapsack_case_small,
+        'tolerance': 1
     },
     {
-        'method': 'mthm',
-        **multiple_knapsack_case_small
+        'method': 'mt2',
+        **single_knapsack_case_medium,
+        'tolerance': 0.99
     },
     {
-        'method': 'mthm',
-        'method_kwargs': {'call_stack': 0},
-        **multiple_knapsack_case_small,
-        'tolerance': 0.85
+        'method': 'mt2',
+        'method_kwargs': {'require_exact': 1},
+        **single_knapsack_case_medium,
     },
     {
-        'method': 'mthm',
-        **multiple_knapsack_case_medium,
-        'tolerance': 0.97
-    },
-    {
-        'method': 'mthm',
-        **multiple_knapsack_case_large,
-        'tolerance': None
+        'method': 'mt2',
+        **single_knapsack_case_large
     }
 ]
 
-multiple_knapsack_fail_cases_base = [
+single_knapsack_fail_cases_base = [
     {
         'case': 'profit_weight_mismatch',
-        'methods': ['mtm', 'mthm'],
+        'methods': ['mt1', 'mt2'],
         'profits': [1, 2, 3, 4, 5],
         'weights': [1, 2, 3, 4],
-        'capacities': [2, 7],
+        'capacity': 9,
         'fail_type': ValueError
     },
     {
         'case': 'only_one_item',
-        'methods': ['mtm', 'mthm'],
+        'methods': ['mt1', 'mt2'],
         'profits': [1],
         'weights': [1],
-        'capacities': [10],
+        'capacity': 9,
         'fail_type': FortranInputCheckError
-    },
-    {
-        'case': 'too_many_items',
-        'methods': ['mtm'],
-        'profits': [1] * 1001,
-        'weights': [1] * 1001,
-        'capacities': [10],
-        'fail_type': ValueError
-    },
-    {
-        'case': 'no_knapsacks',
-        'methods': ['mtm', 'mthm'],
-        'profits': [1, 2, 3, 4, 5],
-        'weights': [1, 2, 3, 4, 5],
-        'capacities': [],
-        'fail_type': FortranInputCheckError
-    },
-    {
-        'case': 'too_many_knapsacks',
-        'methods': ['mtm'],
-        'profits': [1, 2, 3, 4, 5],
-        'weights': [1, 2, 3, 4, 5],
-        'capacities': [4] * 11,
-        'fail_type': ValueError
     },
     {
         'case': 'profit_lte_0',
-        'methods': ['mtm', 'mthm'],
+        'methods': ['mt1', 'mt2'],
         'profits': [1, 2, 3, 4, 0],
         'weights': [1, 2, 3, 4, 5],
-        'capacities': [2, 7],
+        'capacity': 9,
         'fail_type': FortranInputCheckError
     },
     {
         'case': 'weight_lte_0',
-        'methods': ['mtm', 'mthm'],
+        'methods': ['mt1', 'mt2'],
         'profits': [1, 2, 3, 4, 5],
         'weights': [1, 2, 3, 4, 0],
-        'capacities': [2, 7],
+        'capacity': 9,
         'fail_type': FortranInputCheckError
     },
     {
         'case': 'capacity_lte_0',
-        'methods': ['mtm', 'mthm'],
+        'methods': ['mt1', 'mt2'],
         'profits': [1, 2, 3, 4, 0],
         'weights': [1, 2, 3, 4, 5],
-        'capacities': [2, 0],
+        'capacity': 0,
         'fail_type': FortranInputCheckError
     },
     {
         'case': 'min_weight_gt_max_capacity',
-        'methods': ['mtm', 'mthm'],
+        'methods': ['mt1', 'mt2'],
         'profits': [1, 2, 3, 4, 5],
         'weights': [8, 9, 10, 11, 12],
-        'capacities': [2, 7],
-        'fail_type': FortranInputCheckError
-    },
-    {
-        'case': 'max_weight_gt_min_capacity',
-        'methods': ['mtm', 'mthm'],
-        'profits': [1, 2, 3, 4, 5],
-        'weights': [1, 2, 3, 4, 5],
-        'capacities': [4],
+        'capacity': 9,
         'fail_type': FortranInputCheckError
     },
     {
         'case': 'total_weight_le_min_capacity',
-        'methods': ['mtm', 'mthm'],
+        'methods': ['mt1', 'mt2'],
         'profits': [1, 2, 3, 4, 5],
         'weights': [1, 2, 3, 4, 5],
-        'capacities': [16],
+        'capacity': 100,
         'fail_type': FortranInputCheckError
     }
 ]
-multiple_knapsack_fail_cases = [
+single_knapsack_fail_cases = [
     {**case, 'method': method}
-    for case in multiple_knapsack_fail_cases_base
+    for case in single_knapsack_fail_cases_base
     for method in case['methods']
 ]
 
@@ -184,18 +145,18 @@ def get_id(params):
     return f'{method}-{method_kwargs}-{verbose}-{case}'
 
 
-@pytest.mark.parametrize('params', multiple_knapsack_success_cases, ids=get_id)
-def test_solve_multiple_knapsack(params):
+@pytest.mark.parametrize('params', single_knapsack_success_cases, ids=get_id)
+def test_solve_single_knapsack(params):
     func_kwargs = dict(
         profits=params['profits'],
         weights=params['weights'],
-        capacities=params['capacities']
+        capacity=params['capacity']
     )
     for opt_param in ['method', 'method_kwargs', 'verbose']:
         if opt_param in params:
             func_kwargs[opt_param] = params[opt_param]
 
-    res = solve_multiple_knapsack(**func_kwargs)
+    res = solve_single_knapsack(**func_kwargs)
 
     assert isinstance(res, pd.DataFrame)
     assert len(res) == len(params['profits'])
@@ -219,9 +180,9 @@ def test_solve_multiple_knapsack(params):
         assert tuple(solution) == test_solution
 
 
-@pytest.mark.parametrize('params', multiple_knapsack_fail_cases, ids=get_id)
+@pytest.mark.parametrize('params', single_knapsack_fail_cases, ids=get_id)
 def test_solve_multiple_knapsack_fail(params):
     del params['case'], params['methods']
     fail_type = params.pop('fail_type')
     with pytest.raises(fail_type):
-        solve_multiple_knapsack(**params)
+        solve_single_knapsack(**params)
