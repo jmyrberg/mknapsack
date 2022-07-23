@@ -7,7 +7,7 @@
 
 Solving knapsack problems with Python using algorithms by [Martello and Toth](https://dl.acm.org/doi/book/10.5555/98124):
 
-* Single 0-1 knapsack problem: MT1, MT2
+* Single 0-1 knapsack problem: MT1, MT2, MT1R (real numbers)
 * Multiple 0-1 knapsack problem: MTM, MTHM
 
 Documentation is available [here](https://mknapsack.readthedocs.io).
@@ -44,6 +44,8 @@ capacity = 190
 # Assign items into the knapsack while maximizing profit
 res = solve_single_knapsack(profits, weights, capacity)
 ```
+
+If your inputs are real numbers, you may set parameter `method='mt1r'`.
 
 ### Multiple 0-1 Knapsack Problem
 

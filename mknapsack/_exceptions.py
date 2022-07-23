@@ -34,6 +34,13 @@ class FortranInputCheckError(Exception):
             -3: 'One or more of weights is greater than knapsack capacity',
             -4: 'Total weight is smaller than knapsack capacity',
             -5: 'Items should be ordered in descending profit/weight order'
+        },
+        'mt1r': {
+            -1.0: 'Number of items is less than 2',
+            -2.0: 'Profit, weight or capacity is <= 0',
+            -3.0: 'One or more of weights is greater than knapsack capacity',
+            -4.0: 'Total weight is smaller than knapsack capacity',
+            -5.0: 'Items should be ordered in descending profit/weight order'
         }
     }
 

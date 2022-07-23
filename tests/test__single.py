@@ -28,6 +28,17 @@ single_knapsack_case_medium = {
                  1, 1, 0, 0, 0, 0, 0, 0]
 }
 
+single_knapsack_case_medium_real = {
+    'case': 'medium-real',
+    'profits': [78.5, 35.4, 89.9, 36, 94.4, 75.1, 74.9, 99.3, 80.5, 16.1] * 5,
+    'weights': [18.5, 8.3, 23.3, 20.2, 59.5, 61.0, 70.0, 75.0, 76.0, 30.0] * 5,
+    'capacity': 190 * 2,
+    'total_profit': 1221.4,
+    'solution': [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1,
+                 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1,
+                 1, 1, 0, 0, 0, 0, 0, 0]
+}
+
 single_knapsack_case_large = {
     'case': 'large',
     'profits': [78, 35, 89, 36, 94, 75, 74, 100, 80, 16] * 100_000,
@@ -69,13 +80,28 @@ single_knapsack_success_cases = [
     {
         'method': 'mt2',
         **single_knapsack_case_large
+    },
+    {
+        'method': 'mt1r',
+        **single_knapsack_case_small,
+        'tolerance': 1 - 1e-07
+    },
+    {
+        'method': 'mt1r',
+        **single_knapsack_case_medium,
+        'tolerance': 1 - 1e-07
+    },
+    {
+        'method': 'mt1r',
+        **single_knapsack_case_medium_real,
+        'tolerance': 1 - 1e-07
     }
 ]
 
 single_knapsack_fail_cases_base = [
     {
         'case': 'profit_weight_mismatch',
-        'methods': ['mt1', 'mt2'],
+        'methods': ['mt1', 'mt2', 'mt1r'],
         'profits': [1, 2, 3, 4, 5],
         'weights': [1, 2, 3, 4],
         'capacity': 9,
@@ -83,7 +109,7 @@ single_knapsack_fail_cases_base = [
     },
     {
         'case': 'only_one_item',
-        'methods': ['mt1', 'mt2'],
+        'methods': ['mt1', 'mt2', 'mt1r'],
         'profits': [1],
         'weights': [1],
         'capacity': 9,
@@ -91,7 +117,7 @@ single_knapsack_fail_cases_base = [
     },
     {
         'case': 'profit_lte_0',
-        'methods': ['mt1', 'mt2'],
+        'methods': ['mt1', 'mt2', 'mt1r'],
         'profits': [1, 2, 3, 4, 0],
         'weights': [1, 2, 3, 4, 5],
         'capacity': 9,
@@ -99,7 +125,7 @@ single_knapsack_fail_cases_base = [
     },
     {
         'case': 'weight_lte_0',
-        'methods': ['mt1', 'mt2'],
+        'methods': ['mt1', 'mt2', 'mt1r'],
         'profits': [1, 2, 3, 4, 5],
         'weights': [1, 2, 3, 4, 0],
         'capacity': 9,
@@ -107,7 +133,7 @@ single_knapsack_fail_cases_base = [
     },
     {
         'case': 'capacity_lte_0',
-        'methods': ['mt1', 'mt2'],
+        'methods': ['mt1', 'mt2', 'mt1r'],
         'profits': [1, 2, 3, 4, 0],
         'weights': [1, 2, 3, 4, 5],
         'capacity': 0,
@@ -115,7 +141,7 @@ single_knapsack_fail_cases_base = [
     },
     {
         'case': 'min_weight_gt_max_capacity',
-        'methods': ['mt1', 'mt2'],
+        'methods': ['mt1', 'mt2', 'mt1r'],
         'profits': [1, 2, 3, 4, 5],
         'weights': [8, 9, 10, 11, 12],
         'capacity': 9,
@@ -123,11 +149,19 @@ single_knapsack_fail_cases_base = [
     },
     {
         'case': 'total_weight_le_min_capacity',
-        'methods': ['mt1', 'mt2'],
+        'methods': ['mt1', 'mt2', 'mt1r'],
         'profits': [1, 2, 3, 4, 5],
         'weights': [1, 2, 3, 4, 5],
         'capacity': 100,
         'fail_type': FortranInputCheckError
+    },
+    {
+        'case': 'float_inputs_with_real_method',
+        'methods': ['mt1', 'mt2'],
+        'profits': [1.1, 2, 3, 4, 5],
+        'weights': [1, 2, 3, 4, 5],
+        'capacity': 100,
+        'fail_type': ValueError
     }
 ]
 single_knapsack_fail_cases = [
@@ -181,7 +215,7 @@ def test_solve_single_knapsack(params):
 
 
 @pytest.mark.parametrize('params', single_knapsack_fail_cases, ids=get_id)
-def test_solve_multiple_knapsack_fail(params):
+def test_solve_single_knapsack_fail(params):
     del params['case'], params['methods']
     fail_type = params.pop('fail_type')
     with pytest.raises(fail_type):
