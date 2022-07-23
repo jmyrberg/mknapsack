@@ -5816,6 +5816,10 @@ c parameters n, x, jdim, jck, xx and zsign are integer. parameters p,
 c w, c, z, min, psign, wsign, crc, crp and eps are real. on return of
 c mt1r all the input parameters are unchanged.
 c
+cf2py intent(in) n, p, w, c, eps, jdim, jck
+cf2py intent(hide) xx, min, psign, wsign, zsign, crc, crp
+cf2py intent(out) z, x
+cf2py depend(jdim) p, w, x, xx, zsign, min, psign, wsign, crc, crp
       real    p(jdim),w(jdim)
       integer x(jdim)
       integer xx(jdim),zsign(jdim)
