@@ -1,3 +1,2 @@
-cython>=0.26.1
-numpy>=1.13.3
-pandas>=0.20.3
+numpy==1.23.1
+pandas==1.4.3
