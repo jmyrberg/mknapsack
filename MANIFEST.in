@@ -1,1 +1,2 @@
-include VERSION cpp/**
+recursive-include *.f
+exclude .github

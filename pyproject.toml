@@ -1,0 +1,61 @@
+[project]
+name = "mknapsack"
+description = "Solving knapsack and bin packing problems with Python"
+authors = [
+    { name = "Jesse Myrberg", email = "jesse.myrberg@gmail.com" }
+]
+readme = "README.md"
+license = { file = "LICENSE" }
+keywords = ["knapsack", "bin", "packing", "optimization"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 3",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License"
+]
+requires-python = ">=3.8, <3.12"
+dependencies = [
+    "numpy>=1.13",
+    "pandas>=1.0",
+]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+dev = [
+    "build",
+    "flake8",
+    "numpy",
+    "pytest",
+    "setuptools",
+    "setuptools-scm",
+    "twine",
+    "wheel"
+]
+docs = [
+    "myst-parser",
+    "piccolo-theme",
+    "sphinx"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/jmyrberg/mknapsack"
+"Documentation" = "https://mknapsack.readthedocs.io"
+
+[build-system]
+requires = [
+    "setuptools",
+    "setuptools-scm",
+    "numpy",
+    "wheel"
+]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = [
+    "mknapsack*",
+    "tests*"
+]
+
+[tool.setuptools_scm]
+write_to = "mknapsack/_version.py"
+local_scheme = "no-local-version"
