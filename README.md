@@ -5,25 +5,23 @@
 
 ![mknapsack cover](https://github.com/jmyrberg/mknapsack/blob/master/docs/cover.png?raw=true)
 
-Algorithms for solving knapsack problems with Python:
-* [Multiple 0-1 Knapsack Problem](http://www.or.deis.unibo.it/kp/Chapter6.pdf): MTM, MTHM
+Solving knapsack problems with Python using algorithms by [Martello and Toth](https://dl.acm.org/doi/book/10.5555/98124):
 
-This library provides a Python interface to the Fortran code from [Knapsack problems: algorithms and computer implementations](https://dl.acm.org/doi/book/10.5555/98124) by S. Martello and P. Toth, 1990.
+* Multiple 0-1 knapsack problem: MTM, MTHM
+
+Documentation is available [here](https://mknapsack.readthedocs.io).
 
 
 ## Installation
 
-1. Install Fortran compiler, if you don't already have
+1. Install Fortran compiler, if you don't already have it
    * MacOS / Linux:
     `brew install gcc`
    * Linux / Windows Subsystem for Linux:
      `sudo apt-get install gfortran`
-   * Windows (experimental)
-     * Option 1):
-       `conda install -c conda-forge m2w64-toolchain_win-64`
-     * Option 2):
-       [Install MSYS2](https://www.msys2.org) and run
-       `pacman -S --needed base-devel mingw-w64-x86_64-toolchain`
+   * Windows (experimental):
+     * `conda install -c conda-forge m2w64-toolchain_win-64`, or
+     * [Install MSYS2](https://www.msys2.org) and `pacman -S --needed base-devel mingw-w64-x86_64-toolchain`
 
 2. `pip install -U mknapsack`
 
@@ -49,7 +47,7 @@ res = solve_multiple_knapsack(profits, weights, capacities)
 ## References
 
 * [Knapsack problems: algorithms and computer implementations](https://dl.acm.org/doi/book/10.5555/98124) by S. Martello and P. Toth, 1990
-* [Fortran77 source code](http://people.sc.fsu.edu/~jburkardt/f77_src/knapsack/knapsack.f) by S. Martello and P. Toth
+* [Original Fortran77 source code](http://people.sc.fsu.edu/~jburkardt/f77_src/knapsack/knapsack.f) by S. Martello and P. Toth
 
 ---
 Jesse Myrberg (jesse.myrberg@gmail.com)
