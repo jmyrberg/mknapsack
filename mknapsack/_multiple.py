@@ -6,7 +6,6 @@ import logging
 from typing import List, Optional
 
 import numpy as np
-import pandas as pd
 
 from mknapsack._algos import mtm, mthm
 from mknapsack._exceptions import FortranInputCheckError
@@ -16,27 +15,6 @@ from mknapsack._utils import preprocess_array, pad_array
 logger = logging.getLogger(__name__)
 
 
-def process_results(profits, weights, capacities, x):
-    """Preprocess multiple 0-1 knapsack results."""
-    given_knapsacks = pd.DataFrame({
-        'knapsack_id': np.arange(len(capacities)) + 1,
-        'knapsack_capacity': capacities
-    })
-    no_knapsack = pd.DataFrame([{'knapsack_id': 0, 'knapsack_capacity': 0}])
-    knapsacks = pd.concat([no_knapsack, given_knapsacks], axis=0)
-    items = (
-        pd.DataFrame({
-            'item_id': np.arange(len(profits)) + 1,
-            'profit': profits,
-            'weight': weights,
-            'knapsack_id': x[:len(profits)]
-        })
-        .merge(knapsacks, on='knapsack_id', how='left')
-        .assign(assigned=lambda x: x['knapsack_id'] > 0)
-    )
-    return items
-
-
 def solve_multiple_knapsack(
     profits: List[int],
     weights: List[int],
@@ -44,7 +22,7 @@ def solve_multiple_knapsack(
     method: str = 'mthm',
     method_kwargs: Optional[dict] = None,
     verbose: bool = False
-) -> pd.DataFrame:
+) -> np.ndarray:
     """Solves the multiple 0-1 knapsack problem.
 
     Given a set of items with profits and weights and knapsacks with given
@@ -52,7 +30,7 @@ def solve_multiple_knapsack(
     profits?
 
     Args:
-        profits: Profits of each item.
+        profits: Profit of each item.
         weights: Weight of each item.
         capacities: Capacity of each knapsack.
         method:
@@ -87,8 +65,8 @@ def solve_multiple_knapsack(
             Defaults to None.
 
     Returns:
-        pd.DataFrame: The corresponding knapsack for each item, where
-        ``knapsack_id=0`` means that the item is not assigned to a knapsack.
+        np.ndarray: The corresponding knapsack for each item, where 0 means
+        that the item was not assigned to a knapsack.
 
     Raises:
         FortranInputCheckError: Something is wrong with the inputs when
@@ -123,15 +101,18 @@ def solve_multiple_knapsack(
                          f'({len(profits) != len(weights)}')
 
     # Sort items by profit/ratio ratio in ascending order
-    items_order_idx = (profits / weights).argsort()[::-1]
-    items_reverse_idx = np.argsort(items_order_idx)
-    profits = profits[items_order_idx]
-    weights = weights[items_order_idx]
+    items_reorder = (profits / weights).argsort()[::-1]
+    items_reorder_reverse = items_reorder.argsort()
+    profits = profits[items_reorder]
+    weights = weights[items_reorder]
 
     # Sort knapsacks by their capacity in ascending order
-    knapsacks_order_idx = capacities.argsort()
-    knapsacks_reverse_idx = knapsacks_order_idx.argsort()
-    capacities = capacities[knapsacks_order_idx]
+    knapsacks_reorder = capacities.argsort()
+    capacities = capacities[knapsacks_reorder]
+    knapsack_reorder_reverse_map = {
+        idx + 1: i + 1 for i, idx in enumerate(knapsacks_reorder.argsort())
+    }
+    knapsack_reorder_reverse_map[0] = 0
 
     n = len(profits)
     m = len(capacities)
@@ -170,10 +151,8 @@ def solve_multiple_knapsack(
         if verbose:
             logger.info(f'Method: "{method}"')
             logger.info(f'Total profit: {z}')
-            logger.info('Solution vector: '
-                        f'{x[:n][items_reverse_idx].tolist()}')
+            logger.info(f'Solution vector (non-original order): {x}')
             logger.info(f'Number of backtracks: {back}')
-
     elif method == 'mthm':
         p = pad_array(profits, n + 1)
         w = pad_array(weights, n + 1)
@@ -196,30 +175,12 @@ def solve_multiple_knapsack(
         if verbose:
             logger.info(f'Method: "{method}"')
             logger.info(f'Total profit: {z}')
-            logger.info('Solution vector: '
-                        f'{x[:n][items_reverse_idx].tolist()}')
+            logger.info(f'Solution vector (non-original order): {x}')
     else:
         raise ValueError(f'Given method "{method}" not known')
 
     # Inverse items and knapsacks to original order
-    profits = profits[items_reverse_idx]
-    weights = weights[items_reverse_idx]
-    x = np.array(x)[items_reverse_idx]
-    capacities = capacities[knapsacks_reverse_idx]
-
-    res = process_results(profits, weights, capacities, x)
-
-    if verbose:
-        knapsack_results = (
-            res
-            .groupby('knapsack_id')
-            .agg(
-                capacity_used=('weight', 'sum'),
-                capacity_available=('knapsack_capacity', 'first'),
-                profit=('profit', 'sum'),
-                items=('item_id', 'unique')
-            )
-        )
-        logger.info(f'Results by knapsack_id:\n{knapsack_results.to_string()}')
+    res = np.array([knapsack_reorder_reverse_map[i]
+                    for i in x[:n][items_reorder_reverse]])
 
     return res

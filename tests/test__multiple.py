@@ -1,20 +1,22 @@
 """Test cases for multiple knapsack problems."""
 
 
-import pandas as pd
+import numpy as np
 import pytest
 
 from mknapsack._multiple import solve_multiple_knapsack
 from mknapsack._exceptions import FortranInputCheckError
 
+from tests.utils import get_id
+
 
 multiple_knapsack_case_small = {
     'case': 'small',
-    'profits': [78, 35, 89, 36, 94, 75, 74, 100, 80, 16],
-    'weights': [18, 9, 23, 20, 59, 61, 70, 75, 76, 30],
-    'capacities': [90, 100],
+    'profits': [16, 78, 35, 89, 36, 94, 75, 74, 100, 80],
+    'weights': [30, 18, 9, 23, 20, 59, 61, 70, 75, 76],
+    'capacities': [100, 90],
     'total_profit': 407,
-    'solution': [2, 1, 2, 1, 2, 1, 0, 0, 0, 0]
+    'solution': [0, 1, 2, 1, 2, 1, 2, 0, 0, 0]
 }
 
 multiple_knapsack_case_medium = {
@@ -23,8 +25,8 @@ multiple_knapsack_case_medium = {
     'weights': [18, 9, 23, 20, 59, 61, 70, 75, 76, 30] * 5,
     'capacities': [90, 100] * 2,
     'total_profit': 1213,
-    'solution': [1, 0, 3, 0, 0, 0, 0, 0, 0, 0, 3, 4, 2, 2, 4, 0, 0, 0, 0, 0, 3,
-                 2, 4, 1, 0, 0, 0, 0, 0, 0, 2, 4, 3, 2, 0, 0, 0, 0, 0, 0, 3, 1,
+    'solution': [1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 4, 3, 3, 4, 0, 0, 0, 0, 0, 2,
+                 3, 4, 1, 0, 0, 0, 0, 0, 0, 3, 4, 2, 3, 0, 0, 0, 0, 0, 0, 2, 1,
                  1, 1, 0, 0, 0, 0, 0, 0]
 }
 
@@ -55,7 +57,7 @@ multiple_knapsack_success_cases = [
         'method': 'mtm',
         'method_kwargs': {'max_backtracks': 20},
         **multiple_knapsack_case_small,
-        'tolerance': 0.97
+        'tolerance': 0.03
     },
     {
         'method': 'mthm',
@@ -65,17 +67,16 @@ multiple_knapsack_success_cases = [
         'method': 'mthm',
         'method_kwargs': {'call_stack': 0},
         **multiple_knapsack_case_small,
-        'tolerance': 0.85
+        'tolerance': 0.15
     },
     {
         'method': 'mthm',
         **multiple_knapsack_case_medium,
-        'tolerance': 0.97
+        'tolerance': 0.03
     },
     {
         'method': 'mthm',
-        **multiple_knapsack_case_large,
-        'tolerance': None
+        **multiple_knapsack_case_large
     }
 ]
 
@@ -176,47 +177,46 @@ multiple_knapsack_fail_cases = [
 ]
 
 
-def get_id(params):
-    method = str(params.get('method', 'NotSet'))
-    method_kwargs = str(params.get('method_kwargs', 'NotSet'))
-    case = str(params.get('case', 'NotSet'))
-    verbose = str(params.get('verbose', 'NotSet'))
-    return f'{method}-{method_kwargs}-{verbose}-{case}'
-
-
 @pytest.mark.parametrize('params', multiple_knapsack_success_cases, ids=get_id)
 def test_solve_multiple_knapsack(params):
+    # Get function arguments from params
+    profits = params['profits']
+    weights = params['weights']
+    capacities = params['capacities']
+
+    total_profit = params['total_profit']
+    solution = params['solution']
+    tolerance = params.get('tolerance', 0)
+
     func_kwargs = dict(
-        profits=params['profits'],
-        weights=params['weights'],
-        capacities=params['capacities']
+        profits=profits,
+        weights=weights,
+        capacities=capacities
     )
     for opt_param in ['method', 'method_kwargs', 'verbose']:
         if opt_param in params:
             func_kwargs[opt_param] = params[opt_param]
 
+    # Run algorithm
     res = solve_multiple_knapsack(**func_kwargs)
 
-    assert isinstance(res, pd.DataFrame)
-    assert len(res) == len(params['profits'])
+    assert isinstance(res, np.ndarray)
+    assert len(res) == len(profits)
 
-    total_profit = params['total_profit']
-    solution = params['solution']
-    tolerance = params.get('tolerance', 1)
+    # Ensure no overweight in knapsacks
+    weights = np.array(weights)
+    for i, c in enumerate(capacities):
+        assert weights[res == i + 1].sum() <= c
 
     # Ensure profit within given limits
+    res_profit = np.array(profits)[res > 0].sum()
     if total_profit is not None:
-        min_allowed_profit = tolerance * total_profit
-        test_total_profit = res.query('assigned')['profit'].sum()
-        if tolerance == 1:
-            assert test_total_profit == min_allowed_profit
-        else:
-            assert test_total_profit >= min_allowed_profit
+        assert res_profit >= (1 - tolerance) * total_profit and \
+               res_profit <= (1 + tolerance) * total_profit
 
-    # Ensure global optimum when tolerance = 1
-    if solution is not None and tolerance == 1:
-        test_solution = tuple(res['knapsack_id'].to_list())
-        assert tuple(solution) == test_solution
+    # Ensure global optimum when tolerance = 0
+    if solution is not None and tolerance == 0:
+        assert np.allclose(res, solution)
 
 
 @pytest.mark.parametrize('params', multiple_knapsack_fail_cases, ids=get_id)
