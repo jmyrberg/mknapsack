@@ -6499,6 +6499,11 @@ c
 c all the parameters but rd8 are integer. on return of mtb2 all the
 c input parameters are unchanged.
 c
+cf2py intent(in) n, p, w, b, c, jdim1, jdim2, jfo, jfs, jck
+cf2py intent(hide) id1, id2, id3, id4, id5, id6, id7, rd8
+cf2py intent(out) z, x, jub
+cf2py depend(jdim1) p, w, b, x
+cf2py depend(jdim2) id1, id2, id3, id4, id5, id6, id7, rd8
       integer p(jdim1),w(jdim1),b(jdim1),x(jdim1),c,z
       integer id1(jdim2),id2(jdim2),id3(jdim2),id4(jdim2),id5(jdim2),
      &        id6(jdim2),id7(jdim2)

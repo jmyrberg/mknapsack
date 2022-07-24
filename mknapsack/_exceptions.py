@@ -41,6 +41,15 @@ class FortranInputCheckError(Exception):
             -3.0: 'One or more of weights is greater than knapsack capacity',
             -4.0: 'Total weight is smaller than knapsack capacity',
             -5.0: 'Items should be ordered in descending profit/weight order'
+        },
+        'mtb2': {
+            -1: 'Number of items is less than 2',
+            -2: 'Profit, weight, capacity or n_items is <= 0',
+            -3: 'Total weight (weight * total_n_items) of one or more item '
+                'types is greater than the knapsack capacity',
+            -4: 'Total weight of all items is smaller than knapsack capacity',
+            -5: 'Problem with preprocessing before Fortran code',
+            -6: 'Items should be ordered in descending profit/weight order'
         }
     }
 
