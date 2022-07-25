@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 from mknapsack._unbounded import solve_unbounded_knapsack
-from mknapsack._exceptions import FortranError, FortranInputCheckError
+from mknapsack._exceptions import FortranInputCheckError
 
 from tests.utils import get_id
 
@@ -119,7 +119,8 @@ unbounded_knapsack_fail_cases = [
 ]
 
 
-@pytest.mark.parametrize('params', unbounded_knapsack_success_cases, ids=get_id)
+@pytest.mark.parametrize('params', unbounded_knapsack_success_cases,
+                         ids=get_id)
 def test_solve_unbounded_knapsack(params):
     # Get function arguments from params
     profits = params['profits']
