@@ -2,6 +2,7 @@
 
 __all__ = [
     'solve_bounded_knapsack',
+    'solve_unbounded_knapsack',
     'solve_single_knapsack',
     'solve_multiple_knapsack'
 ]
@@ -18,5 +19,6 @@ if sys.platform == 'win32' and os.path.isdir(extra_dll_dir):
 
 
 from mknapsack._bounded import solve_bounded_knapsack  # noqa: E402
+from mknapsack._unbounded import solve_unbounded_knapsack  # noqa: E402
 from mknapsack._single import solve_single_knapsack  # noqa: E402
 from mknapsack._multiple import solve_multiple_knapsack  # noqa: E402
