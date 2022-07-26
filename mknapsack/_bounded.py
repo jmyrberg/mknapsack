@@ -1,9 +1,4 @@
-"""Module for solving bounded knapsack problems.
-
-TODO:
-    mtu1: Unbounded single knapsack problem
-    mtu2: Unbounded single knapsack problem
-"""
+"""Module for solving bounded knapsack problems."""
 
 
 import logging

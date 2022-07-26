@@ -9192,6 +9192,10 @@ c    Wiley, 1990,
 c    ISBN: 0-471-92420-2,
 c    LC: QA267.7.M37.
 c
+cf2py intent(in) n, p, w, c, rn, jdim
+cf2py intent(hide) xx, min
+cf2py intent(out) z, x, jub
+cf2py depend(jdim) p, w, xx, x, min
       integer p(jdim),w(jdim),c,z
       integer xx(jdim),cws,cwf,diff,r,s,s1,s2,t,profit,ps
       real    x(jdim),min(jdim)
@@ -9434,7 +9438,11 @@ c arrays po, wo, xo, rr and pp are dummy.
 c
 c all the parameters but xo and rr are integer. on return of mtu2
 c all the input parameters are unchanged.
-c
+c n,p,w,c,z,x,jdim,jfo,jck,jub,po,wo,xo,rr,pp
+cf2py intent(in) n, p, w, c, jdim, jfo, jck
+cf2py intent(hide) po, wo, xo, rr, pp
+cf2py intent(out) z, x, jub
+cf2py depend(jdim) p, w, x, po, wo, pp, rr, xo
       integer p(jdim),w(jdim),x(jdim),po(jdim),wo(jdim),pp(jdim),c,z
       real    rr(jdim),xo(jdim)
       z = 0

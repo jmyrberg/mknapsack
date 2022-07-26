@@ -1,7 +1,12 @@
 """Module for exceptions."""
 
 
+class FortranError(Exception):
+    """Error when running Fortran code"""
+
+
 class FortranInputCheckError(Exception):
+    """Error in Fortran source code input validation."""
     error_codes = {
         'mtm': {
             -1: 'Number of items/knapsacks is either too small or large',
@@ -50,6 +55,11 @@ class FortranInputCheckError(Exception):
             -4: 'Total weight of all items is smaller than knapsack capacity',
             -5: 'Problem with preprocessing before Fortran code',
             -6: 'Items should be ordered in descending profit/weight order'
+        },
+        'mtu2': {
+            -1: 'Number of items is less than 2',
+            -2: 'Profit, weight or capacity is <= 0',
+            -3: 'One or more item weights is greater than knapsack capacity'
         }
     }
 
