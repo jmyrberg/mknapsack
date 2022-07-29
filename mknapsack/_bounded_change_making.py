@@ -1,4 +1,4 @@
-"""Module for solving change-making problem."""
+"""Module for solving bounded change-making problem."""
 
 
 import logging
@@ -7,7 +7,7 @@ from typing import List, Optional
 
 import numpy as np
 
-from mknapsack._algos import mtc2
+from mknapsack._algos import mtcb
 from mknapsack._exceptions import FortranInputCheckError, NoSolutionError
 from mknapsack._utils import preprocess_array, pad_array
 
@@ -15,33 +15,35 @@ from mknapsack._utils import preprocess_array, pad_array
 logger = logging.getLogger(__name__)
 
 
-def solve_change_making(
+def solve_bounded_change_making(
     weights: List[int],
+    n_items: List[int],
     capacity: int,
-    method: str = 'mtc2',
+    method: str = 'mtcb',
     method_kwargs: Optional[dict] = None,
     verbose: bool = False
 ) -> np.ndarray:
-    """Solves the change-making problem.
+    """Solves the bounded change-making problem.
 
-    Given a set of item types with weights and a knapsack with capacity, find
-    the minimum number of items that add up to the capacity.
+    Given a number of items for item types with weights, and a knapsack with
+    capacity, find the minimum number of items that add up to the capacity.
 
     Args:
         weights: Weight of each item type.
+        n_items: Number of items available for each item type.
         capacity: Capacity of knapsack.
         method:
             Algorithm to use for solving, should be one of
 
-                - 'mtc2' - provides a fast heuristical solution that might not
+                - 'mtcb' - provides a fast heuristical solution that might not
                   be the global optimum, but is suitable for larger problems,
                   or an exact solution if required
 
-            Defaults to 'mtc2'.
+            Defaults to 'mtcb'.
         method_kwargs:
             Keyword arguments to pass to a given `method`.
 
-                - 'mtc2'
+                - 'mtcb'
                     * **require_exact** (int, optional) - Whether to require an
                       exact solution or not (0=no, 1=yes). Defaults to 0.
                     * **max_backtracks** (int, optional) - The maximum number
@@ -64,10 +66,11 @@ def solve_change_making(
     Example:
         .. code-block:: python
 
-            from mknapsack import solve_change_making
+            from mknapsack import solve_bounded_change_making
 
-            res = solve_change_making(
+            res = solve_bounded_change_making(
                 weights=[18, 9, 23, 20, 59, 61, 70, 75, 76, 30],
+                n_items=[1, 2, 3, 2, 1, 1, 1, 2, 3, 2],
                 capacity=190
             )
 
@@ -80,17 +83,24 @@ def solve_change_making(
           <https://people.sc.fsu.edu/~jburkardt/f77_src/knapsack/knapsack.f>`_
     """
     weights = preprocess_array(weights)
+    n_items = preprocess_array(n_items)
 
     n = len(weights)
 
+    if len(weights) != len(n_items):
+        raise ValueError('Weights length must be equal to n_items '
+                         f'({len(weights) != len(n_items)}')
+
     method = method.lower()
     method_kwargs = method_kwargs or {}
-    if method == 'mtc2':
+    if method == 'mtcb':
         jdn = n + 1
         jdl = np.max(weights) - 1
         w = pad_array(weights, jdn)
-        z, x = mtc2(
+        b = pad_array(n_items, jdn)
+        z, x = mtcb(
             n=n,
+            b=b,
             w=w,
             c=capacity,
             jdn=jdn,

@@ -12,6 +12,7 @@ Solving knapsack problems with Python using algorithms by [Martello and Toth](ht
 * Unbounded knapsack problem: MTU1, MTU2
 * Multiple 0-1 knapsack problem: MTM, MTHM
 * Change-making problem: MTC2
+* Bounded change-making problem: MTCB
 
 Documentation is available [here](https://mknapsack.readthedocs.io).
 
@@ -59,7 +60,7 @@ from mknapsack import solve_bounded_knapsack
 profits = [78, 35, 89, 36, 94, 75, 74, 79, 80, 16]
 weights = [18, 9, 23, 20, 59, 61, 70, 75, 76, 30]
 
-# ..and the number of items for each item type:
+# ...and the number of items available for each item type:
 n_items = [1, 2, 3, 2, 2, 1, 2, 2, 1, 4]
 
 # ...and a knapsack with the following capacity:
@@ -114,6 +115,24 @@ capacity = 190
 
 # Fill the knapsack while minimizing the number of items
 res = solve_change_making(weights, capacity)
+```
+
+### Bounded Change-Making Problem
+
+```python
+from mknapsack import solve_bounded_change_making
+
+# Given ten item types with the following weights:
+weights = [18, 9, 23, 20, 59, 61, 70, 75, 76, 30]
+
+# ...and the number of items available for each item type:
+n_items = [1, 2, 3, 2, 1, 1, 1, 2, 1, 2]
+
+# ...and a knapsack with the following capacity:
+capacity = 190
+
+# Fill the knapsack while minimizing the number of items
+res = solve_bounded_change_making(weights, n_items, capacity)
 ```
 
 ## References

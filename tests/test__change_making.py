@@ -122,7 +122,7 @@ def test_solve_change_making(params):
     assert len(res) == len(weights)
 
     # Ensure no overweight in knapsack
-    assert (np.array(weights) * res).sum() <= capacity
+    assert (np.array(weights) * res).sum() == capacity
 
     # Ensure profit within given limits
     res_profit = res.sum()
