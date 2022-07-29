@@ -6678,8 +6678,8 @@ c
       iiold = ii
       go to 100
       end
-      subroutine mtc2 ( n, w, c, z, x, jdn, jdl, jfo, jck, xx,wr, pr,
-     &  m, l )
+      subroutine mtc2 ( n, w, c, z, x, jdn, jdl, jfo, back, jck, xx, wr, 
+     & pr, m, l )
 
 c*********************************************************************72
 c
@@ -6718,6 +6718,7 @@ c
 c  Modified:
 c
 c    06 December 2009
+c    27 July 2022 (jmyrberg)
 c
 c  Author:
 c
@@ -6747,8 +6748,10 @@ c         if the core memory is not enough,  jdl  should be set
 c         to the largest possible value);
 c
 c jfo   = 1 if optimal solution is required,
-c       = 0 if approximate solution is required (at most 100000
+c       = 0 if approximate solution is required (at most back
 c         backtrackings are performed);
+c
+c back  = maximum number of backtracks to perform when jfo = 0
 c
 c jck   = 1 if check on the input data is desired,
 c       = 0 otherwise.
@@ -6767,7 +6770,12 @@ c
 c all the parameters are integer. on return of mtc2 all the input
 c parameters are unchanged.
 c
-      integer w(jdn),x(jdn),c,z
+cf2py intent(in) n, w, c, jdn, jdl, jfo, back, jck
+cf2py intent(hide) xx, m, l, wr, pr
+cf2py intent(out) z, x
+cf2py depend(jdn)  w, x, xx, wr, pr
+cf2py depend(jdl)  m, l
+      integer w(jdn),x(jdn),c,z,back
       integer xx(jdn),wr(jdn),pr(jdn)
       integer m(jdl),l(jdl)
       integer prj,cws,s1,s2
@@ -6785,7 +6793,7 @@ c
       maxbck = - 1
 
       if ( jfo .eq. 0 ) then
-        maxbck = 100000
+        maxbck = back
       end if
 c
 c lower bound computation.
@@ -9438,7 +9446,6 @@ c arrays po, wo, xo, rr and pp are dummy.
 c
 c all the parameters but xo and rr are integer. on return of mtu2
 c all the input parameters are unchanged.
-c n,p,w,c,z,x,jdim,jfo,jck,jub,po,wo,xo,rr,pp
 cf2py intent(in) n, p, w, c, jdim, jfo, jck
 cf2py intent(hide) po, wo, xo, rr, pp
 cf2py intent(out) z, x, jub

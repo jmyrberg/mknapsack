@@ -1,8 +1,12 @@
 """Module for exceptions."""
 
 
+class NoSolutionError(Exception):
+    """Error when no solution to a problem exists."""
+
+
 class FortranError(Exception):
-    """Error when running Fortran code"""
+    """Error when running Fortran code."""
 
 
 class FortranInputCheckError(Exception):
@@ -60,6 +64,11 @@ class FortranInputCheckError(Exception):
             -1: 'Number of items is less than 2',
             -2: 'Profit, weight or capacity is <= 0',
             -3: 'One or more item weights is greater than knapsack capacity'
+        },
+        'mtc2': {
+            -1: 'Number of items is less than 2',
+            -2: 'Weight or capacity is <= 0',
+            -3: 'One or more of weights is greater than knapsack capacity'
         }
     }
 
