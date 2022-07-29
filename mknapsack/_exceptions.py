@@ -56,7 +56,8 @@ class FortranInputCheckError(Exception):
             -2: 'Profit, weight, capacity or n_items is <= 0',
             -3: 'Total weight (weight * total_n_items) of one or more item '
                 'types is greater than the knapsack capacity',
-            -4: 'Total weight of all items is smaller than knapsack capacity',
+            -4: 'Total weight of all items is smaller than or equal to '
+                'knapsack capacity',
             -5: 'Problem with preprocessing before Fortran code',
             -6: 'Items should be ordered in descending profit/weight order'
         },
@@ -69,6 +70,15 @@ class FortranInputCheckError(Exception):
             -1: 'Number of items is less than 2',
             -2: 'Weight or capacity is <= 0',
             -3: 'One or more of weights is greater than knapsack capacity'
+        },
+        'mtcb': {
+            -1: 'Number of items is less than 2',
+            -2: 'Weight, number of items or capacity is <= 0',
+            -3: 'One or more of weights is greater than knapsack capacity',
+            -4: 'Total weight (weight * total_n_items) of an item type is '
+                'greater than knapsack capacity',
+            -5: 'Total weight of all items is smaller than or equal to '
+                'knapsack capacity'
         }
     }
 

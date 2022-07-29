@@ -6906,7 +6906,7 @@ c
 
       return
       end
-      subroutine mtcb(n,w,b,c,z,x,jdn,jdl,jfo,jck,xx,wr,br,pr,m,l)
+      subroutine mtcb(n,w,b,c,z,x,jdn,jdl,jfo,back,jck,xx,wr,br,pr,m,l)
 
 c*********************************************************************72
 c
@@ -6948,6 +6948,7 @@ c
 c  Modified:
 c
 c    06 December 2009
+c    27 July 2022 (jmyrberg)
 c
 c  Author:
 c
@@ -6973,6 +6974,7 @@ c         if the core memory is not enough,  jdl  should be set
 c         to the largest possible value);
 c jfo   = 1 if optimal solution is required,
 c       = 0 if approximate solution is required (at most 100000
+c back  = maximum number of backtracks to perform when jfo = 0
 c         backtrackings are performed);
 c jck   = 1 if check on the input data is desired,
 c       = 0 otherwise.
@@ -6989,14 +6991,19 @@ c
 c all the parameters are integer. on return of mtcb all the input
 c parameters are unchanged.
 c
-      integer w(jdn),b(jdn),x(jdn),c,z
+cf2py intent(in) n, w, b, c, jdn, jdl, jfo, back, jck
+cf2py intent(hide) xx, m, l, wr, br, pr
+cf2py intent(out) z, x
+cf2py depend(jdn)  w, b, x, xx, wr, br, pr
+cf2py depend(jdl)  m, l
+      integer w(jdn),b(jdn),x(jdn),c,z,back
       integer xx(jdn),wr(jdn),br(jdn),pr(jdn)
       integer m(jdl),l(jdl)
       z = c + 1
       if ( jck .eq. 1 ) call chmtcb(n,w,b,c,z,jdn)
       if ( z .lt. 0 ) return
       maxbck = - 1
-      if ( jfo .eq. 0 ) maxbck = 100000
+      if ( jfo .eq. 0 ) maxbck = back
 c
 c sorting.
 c
