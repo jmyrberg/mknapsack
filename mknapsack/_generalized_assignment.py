@@ -2,15 +2,15 @@
 
 
 import logging
-import warnings
 
 from typing import List, Optional
 
 import numpy as np
 
 from mknapsack._algos import mtg
-from mknapsack._exceptions import FortranInputCheckError, NoSolutionError
-from mknapsack._utils import preprocess_array
+from mknapsack._exceptions import FortranInputCheckError, NoSolutionError, \
+    ProblemSizeError
+from mknapsack._utils import preprocess_array, pad_array
 
 
 logger = logging.getLogger(__name__)
@@ -69,6 +69,8 @@ def solve_generalized_assignment(
 
     Raises:
         NoSolutionError: No feasible solution found.
+        ProblemSizeError: When problem is too large to be solved with the given
+            method.
         FortranInputCheckError: Something is wrong with the inputs when
             validated in the original Fortran source code side.
         ValueError: Something is wrong with the given inputs.
@@ -118,41 +120,41 @@ def solve_generalized_assignment(
     method = method.lower()
     method_kwargs = method_kwargs or {}
     if method == 'mtg':
-        dimnlev = method_kwargs.get('dimnlev', 150)  # Kept private
-        dimpc = method_kwargs.get('dimpc', 30)  # Kept private
+        maxm = 10
+        maxn = 100
+
+        # The problem size is limited on Fortran side
+        error_msg = (
+            'The number of {0} {1} exceeds {2}, and there is no guarantee '
+            'that the algorithm will work as intended or provides a solution '
+            'at all')
+        if m > maxm:
+            raise ProblemSizeError(error_msg.format('knapsacks', m, maxm))
+        if n > maxn:
+            raise ProblemSizeError(error_msg.format('items', n, maxn))
+
+        p = pad_array(profits, (maxm, maxn))
+        w = pad_array(weights, (maxm, maxn))
+        c = pad_array(capacities, maxm)
+
         if method_kwargs.get('require_exact', 0):
             back = -1
         else:
             back = method_kwargs.get('max_backtracks', 100_000)
 
-        # The problem size is limited in Fortran side for MTG
-        warn_text = (
-            'The number of {0} {1} exceeds {2}, and there is no guarantee '
-            'that the algorithm will work as intended or provides a solution '
-            'at all')
-        if m > 10:
-            warnings.warn(warn_text.format('knapsacks', m, 10))
-        if n > 100:
-            warnings.warn(warn_text.format('items', n, 100))
-        if dimnlev > 150:
-            warnings.warn(warn_text.format('tree levels', dimnlev, 150))
-
         z, x, jb = mtg(
             n=n,
             m=m,
-            p=profits,
-            w=weights,
-            c=capacities,
+            p=p,
+            w=w,
+            c=c,
             minmax=2 if maximize else 1,
             back=back,
-            jck=method_kwargs.get('check_inputs', 1),
-            dimn=n,
-            dimnp1=n + 1,
-            dimm=m,
-            dimnlev=dimnlev,
-            dimpc=dimpc
+            jck=method_kwargs.get('check_inputs', 1)
         )
-
+        print(z)
+        print(x)
+        print(jb)
         if z == 0:
             raise NoSolutionError('No feasible solution found')
         elif z < 0:

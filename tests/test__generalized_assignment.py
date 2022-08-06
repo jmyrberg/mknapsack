@@ -5,7 +5,8 @@ import numpy as np
 import pytest
 
 from mknapsack._generalized_assignment import solve_generalized_assignment
-from mknapsack._exceptions import FortranInputCheckError, NoSolutionError
+from mknapsack._exceptions import FortranInputCheckError, NoSolutionError, \
+    ProblemSizeError
 
 from tests.utils import get_id
 
@@ -232,7 +233,8 @@ generalized_assignment_success_cases = [
      'tolerance': 0}
 ]
 
-generalized_assignment_warn_cases_base = [
+
+generalized_assignment_fail_cases_base = [
     {
         'case': 'mtg_too_many_items',
         'methods': ['mtg'],
@@ -245,7 +247,7 @@ generalized_assignment_warn_cases_base = [
             np.array(generalized_assignment_case_large['profits'])[:, -1:]
         ], axis=1),
         'capacities': generalized_assignment_case_large['capacities'],
-        'warn_type': UserWarning
+        'fail_type': ProblemSizeError
     },
     {
         'case': 'mtg_too_many_knapsacks',
@@ -259,17 +261,8 @@ generalized_assignment_warn_cases_base = [
             generalized_assignment_case_large['profits']
         ], axis=0),
         'capacities': generalized_assignment_case_large['capacities'] * 2,
-        'warn_type': UserWarning
-    }
-]
-
-generalized_assignment_warn_cases = [
-    {**case, 'method': method}
-    for case in generalized_assignment_warn_cases_base
-    for method in case['methods']
-]
-
-generalized_assignment_fail_cases_base = [
+        'fail_type': ProblemSizeError
+    },
     {
         'case': 'profits_weights_knapsacks_mismatch',
         'methods': ['mtg'],
@@ -308,24 +301,6 @@ generalized_assignment_fail_cases_base = [
         'profits':
             np.array(generalized_assignment_case_small['profits'])[:, :1],
         'capacities': generalized_assignment_case_small['capacities'],
-        'fail_type': FortranInputCheckError
-    },
-    {
-        'case': 'n_knapsacks_larger_than_bits',
-        'methods': ['mtg'],
-        'weights': np.concatenate([
-            generalized_assignment_case_large['weights'],
-            generalized_assignment_case_large['weights'],
-            generalized_assignment_case_large['weights'],
-            generalized_assignment_case_large['weights']
-        ], axis=0),
-        'profits': np.concatenate([
-            generalized_assignment_case_large['profits'],
-            generalized_assignment_case_large['profits'],
-            generalized_assignment_case_large['profits'],
-            generalized_assignment_case_large['profits']
-        ], axis=0),
-        'capacities': generalized_assignment_case_large['capacities'] * 4,
         'fail_type': FortranInputCheckError
     },
     {
@@ -435,18 +410,6 @@ def test_solve_generalized_assignment(params):
     # Ensure global optimum when tolerance = 0
     if solution is not None and tolerance == 0:
         assert np.allclose(res, solution)
-
-
-@pytest.mark.parametrize('params', generalized_assignment_warn_cases,
-                         ids=get_id)
-def test_solve_generalized_assignment_warn(params):
-    del params['case'], params['methods']
-    warn_type = params.pop('warn_type')
-    with pytest.warns(warn_type):
-        try:
-            solve_generalized_assignment(**params)
-        except Exception:
-            pass
 
 
 @pytest.mark.parametrize('params', generalized_assignment_fail_cases,

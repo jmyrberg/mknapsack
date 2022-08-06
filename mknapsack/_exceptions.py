@@ -5,6 +5,10 @@ class NoSolutionError(Exception):
     """Error when no solution to a problem exists."""
 
 
+class ProblemSizeError(Exception):
+    """Error when problem size is too large to be solved."""
+
+
 class FortranError(Exception):
     """Error when running Fortran code."""
 
