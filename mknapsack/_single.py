@@ -62,6 +62,7 @@ def solve_single_knapsack(
                       inputs or not (0=no, 1=yes). Defaults to 1.
 
             Defaults to None.
+        verbose: Log details of the solution. Defaults to False.
 
     Returns:
         np.ndarray: Indicator of knapsack assignment for each item, where 0
@@ -113,7 +114,7 @@ def solve_single_knapsack(
         raise ValueError('Profits length must be equal to weights '
                          f'({len(profits) != len(weights)}')
 
-    # Sort items by profit/ratio ratio in ascending order
+    # Sort items by profit/weights ratio in ascending order
     items_reorder = (profits / weights).argsort()[::-1]
     items_reorder_reverse = items_reorder.argsort()
     profits = profits[items_reorder]

@@ -74,6 +74,7 @@ def solve_generalized_assignment(
                       inputs or not (0=no, 1=yes). Defaults to 1.
 
             Defaults to None.
+        verbose: Log details of the solution. Defaults to False.
 
     Returns:
         np.ndarray: Assigned knapsack for each item.

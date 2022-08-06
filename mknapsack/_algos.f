@@ -8536,6 +8536,10 @@ c all the parameters are integer. on return of mtp all the input
 c parameters are unchanged except  back , which gives the number of
 c backtrackings performed.
 c
+cf2py intent(in) n, w, c, jdim, back, jck
+cf2py intent(out) z, xstar, lb
+cf2py intent(hide) wr, xstarr, dum, res, rel, x, r, wa, wb, kfix, fixit, xred, ls, lsb, xheu 
+cf2py depend(jdim) w, xstar, wr, xstarr, dum, res, rel, x, r, wa, wb, kfix, fixit, xred, ls, lsb, xheu
       integer w(jdim)
       integer xstar(jdim),c,z,back
       integer wr(jdim),xstarr(jdim),dum(jdim),vstar
