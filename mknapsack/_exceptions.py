@@ -92,6 +92,13 @@ class FortranInputCheckError(Exception):
             -5: 'One or more of weights is greater than knapsack capacity',
             -6: 'One or more knapsacks cannot fit any items',
             -7: 'Number of branching trees is too small for the problem size'
+        },
+        'mthg': {
+            -1: 'Number of knapsacks is less than 2',
+            -2: 'Number of items is less than 2',
+            -3: 'Profit, weight, or capacity is <= 0',
+            -4: 'One or more of weights is greater than knapsack capacity',
+            -5: 'One or more knapsacks cannot fit any items'
         }
     }
 

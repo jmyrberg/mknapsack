@@ -45,8 +45,8 @@ generalized_assignment_case_small2 = {
     'solution': [2, 1, 1, 2, 1]
 }
 
-generalized_assignment_case_large = {  # yagiura2004/c10400
-    'case': 'large',
+generalized_assignment_case_medium = {  # yagiura2004/c10400
+    'case': 'medium',
     'weights': [
        [12, 15, 25, 13, 15,  6, 14,  9, 22, 24, 16, 18, 10, 14,  9, 23,
         11, 19,  9, 18, 14, 23, 10, 15, 18,  8, 24, 20, 20, 19, 16, 24,
@@ -202,11 +202,11 @@ generalized_assignment_case_large = {  # yagiura2004/c10400
           4,  9,  9,  5,  2,  8,  1,  5,  3,  4,  3,  4,  5,  4,  6]
 }
 
-generalized_assignment_case_large_minimize = {
-    'case': 'large-minimize',
-    'weights': generalized_assignment_case_large['weights'],
-    'profits': generalized_assignment_case_large['profits'],
-    'capacities': generalized_assignment_case_large['capacities'],
+generalized_assignment_case_medium_minimize = {
+    'case': 'medium-minimize',
+    'weights': generalized_assignment_case_medium['weights'],
+    'profits': generalized_assignment_case_medium['profits'],
+    'capacities': generalized_assignment_case_medium['capacities'],
     'maximize': False,
     'total_profit': 1326,
     'solution':
@@ -218,49 +218,84 @@ generalized_assignment_case_large_minimize = {
           3,  4,  8,  7,  3,  2,  4,  1,  9,  9,  4,  9,  8,  8,  7]
 }
 
+
+generalized_assignment_case_large = {
+    'case': 'large',
+    'weights': np.tile(generalized_assignment_case_medium['weights'], (4, 4)),
+    'profits': np.tile(generalized_assignment_case_medium['profits'], (4, 4)),
+    'capacities': generalized_assignment_case_medium['capacities'] * 4,
+    'total_profit': None,
+    'solution': None
+}
+
 generalized_assignment_success_cases = [
     {'method': 'mtg', **generalized_assignment_case_small},
     {'method': 'mtg', **generalized_assignment_case_small_reverse},
     {'method': 'mtg', **generalized_assignment_case_small2},
-    {'method': 'mtg', **generalized_assignment_case_large},
-    {'method': 'mtg', **generalized_assignment_case_large_minimize},
-    {'method': 'mtg', **generalized_assignment_case_large,
+    {'method': 'mtg', **generalized_assignment_case_medium},
+    {'method': 'mtg', **generalized_assignment_case_medium_minimize},
+    {'method': 'mtg', **generalized_assignment_case_medium,
      'method_kwargs': {'require_exact': 1}},
-    {'method': 'mtg', **generalized_assignment_case_large_minimize,
+    {'method': 'mtg', **generalized_assignment_case_medium_minimize,
      'method_kwargs': {'require_exact': 1}},
     {'method': 'mtg', **generalized_assignment_case_small,
-     'method_kwargs': {'max_backtracks': 1, 'require_exact': 0},
-     'tolerance': 0}
+     'method_kwargs': {'max_backtracks': 1, 'require_exact': 0}},
+    {'method': 'mthg', **generalized_assignment_case_small},
+    {'method': 'mthg', **generalized_assignment_case_small_reverse,
+     'tolerance': 0.03},
+    {'method': 'mthg', **generalized_assignment_case_small2},
+    {'method': 'mthg', **generalized_assignment_case_medium},
+    {'method': 'mthg', **generalized_assignment_case_medium_minimize},
+    {'method': 'mthg', **generalized_assignment_case_large}
 ]
-
 
 generalized_assignment_fail_cases_base = [
     {
         'case': 'mtg_too_many_items',
         'methods': ['mtg'],
         'weights': np.concatenate([
-            generalized_assignment_case_large['weights'],
-            np.array(generalized_assignment_case_large['weights'])[:, -1:]
+            generalized_assignment_case_medium['weights'],
+            np.array(generalized_assignment_case_medium['weights'])[:, -1:]
         ], axis=1),
         'profits': np.concatenate([
-            generalized_assignment_case_large['profits'],
-            np.array(generalized_assignment_case_large['profits'])[:, -1:]
+            generalized_assignment_case_medium['profits'],
+            np.array(generalized_assignment_case_medium['profits'])[:, -1:]
         ], axis=1),
-        'capacities': generalized_assignment_case_large['capacities'],
+        'capacities': generalized_assignment_case_medium['capacities'],
         'fail_type': ProblemSizeError
     },
     {
         'case': 'mtg_too_many_knapsacks',
         'methods': ['mtg'],
         'weights': np.concatenate([
-            generalized_assignment_case_large['weights'],
-            generalized_assignment_case_large['weights']
+            generalized_assignment_case_medium['weights'],
+            generalized_assignment_case_medium['weights']
         ], axis=0),
         'profits': np.concatenate([
-            generalized_assignment_case_large['profits'],
-            generalized_assignment_case_large['profits']
+            generalized_assignment_case_medium['profits'],
+            generalized_assignment_case_medium['profits']
         ], axis=0),
-        'capacities': generalized_assignment_case_large['capacities'] * 2,
+        'capacities': generalized_assignment_case_medium['capacities'] * 2,
+        'fail_type': ProblemSizeError
+    },
+    {
+        'case': 'mthg_too_many_items',
+        'methods': ['mthg'],
+        'weights': np.tile(
+            generalized_assignment_case_medium['weights'], (1, 6)),
+        'profits': np.tile(
+            generalized_assignment_case_medium['profits'], (1, 6)),
+        'capacities': generalized_assignment_case_medium['capacities'],
+        'fail_type': ProblemSizeError
+    },
+    {
+        'case': 'mthg_too_many_knapsacks',
+        'methods': ['mthg'],
+        'weights': np.tile(
+            generalized_assignment_case_medium['weights'], (6, 1)),
+        'profits': np.tile(
+            generalized_assignment_case_medium['profits'], (6, 1)),
+        'capacities': generalized_assignment_case_medium['capacities'] * 6,
         'fail_type': ProblemSizeError
     },
     {
@@ -285,7 +320,7 @@ generalized_assignment_fail_cases_base = [
     },
     {
         'case': 'only_one_knapsack',
-        'methods': ['mtg'],
+        'methods': ['mtg', 'mthg'],
         'weights':
             np.array(generalized_assignment_case_small['weights'])[:1, :],
         'profits':
@@ -295,7 +330,7 @@ generalized_assignment_fail_cases_base = [
     },
     {
         'case': 'only_one_item',
-        'methods': ['mtg'],
+        'methods': ['mtg', 'mthg'],
         'weights':
             np.array(generalized_assignment_case_small['weights'])[:, :1],
         'profits':
@@ -305,7 +340,7 @@ generalized_assignment_fail_cases_base = [
     },
     {
         'case': 'weight_lte_0',
-        'methods': ['mtg'],
+        'methods': ['mtg', 'mthg'],
         'weights': [[4, 1, 2, 1, 4, 3, 0],
                     [9, 9, 8, 1, 3, 8, 7]],
         'profits': [[6, 9, 4, 2, 10, 3, 6],
@@ -315,7 +350,7 @@ generalized_assignment_fail_cases_base = [
     },
     {
         'case': 'profit_lte_0',
-        'methods': ['mtg'],
+        'methods': ['mtg', 'mthg'],
         'weights': [[4, 1, 2, 1, 4, 3, 8],
                     [9, 9, 8, 1, 3, 8, 7]],
         'profits': [[6, 9, 4, 2, 10, 0, 6],
@@ -325,7 +360,7 @@ generalized_assignment_fail_cases_base = [
     },
     {
         'case': 'capacity_lte_0',
-        'methods': ['mtg'],
+        'methods': ['mtg', 'mthg'],
         'weights': [[4, 1, 2, 1, 4, 3, 8],
                     [9, 9, 8, 1, 3, 8, 7]],
         'profits': [[6, 9, 4, 2, 10, 3, 6],
@@ -335,7 +370,7 @@ generalized_assignment_fail_cases_base = [
     },
     {
         'case': 'item_weight_gt_capacity',
-        'methods': ['mtg'],
+        'methods': ['mtg', 'mthg'],
         'weights': [[4, 1, 2, 1, 4, 3, 12],
                     [9, 9, 8, 1, 3, 8, 23]],
         'profits': [[6, 9, 4, 2, 10, 3, 6],
@@ -345,7 +380,7 @@ generalized_assignment_fail_cases_base = [
     },
     {
         'case': 'capacity_lt_weights',
-        'methods': ['mtg'],
+        'methods': ['mtg', 'mthg'],
         'weights': [[4, 1, 2, 1, 4, 3, 8],
                     [9, 9, 8, 7, 6, 8, 7]],
         'profits': [[6, 9, 4, 2, 10, 3, 6],
@@ -355,7 +390,7 @@ generalized_assignment_fail_cases_base = [
     },
     {
         'case': 'no_solution',
-        'methods': ['mtg'],
+        'methods': ['mtg', 'mthg'],
         'weights': [[4, 10, 2, 1, 4, 3, 8],
                     [9, 21, 8, 7, 6, 8, 7]],
         'profits': [[6, 9, 4, 2, 10, 3, 6],
@@ -395,14 +430,18 @@ def test_solve_generalized_assignment(params):
     assert isinstance(res, np.ndarray)
     assert len(res) == len(weights[0])
 
+    def choose(a, c):
+        return a[c, range(a.shape[1])]
+
     # Ensure no overweight in knapsacks
     weights = np.array(weights)
-    res_weights = np.choose(res - 1, weights)
+    res_weights = choose(weights, res - 1)
     for i, capacity in enumerate(capacities):
         assert res_weights[res == i + 1].sum() <= capacity
 
     # Ensure profit within given limits
-    res_profit = np.choose(res - 1, profits).sum()
+    profits = np.array(profits)
+    res_profit = choose(profits, res - 1).sum()
     if total_profit is not None:
         assert res_profit >= (1 - tolerance) * total_profit and \
                res_profit <= (1 + tolerance) * total_profit

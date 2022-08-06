@@ -13,7 +13,7 @@ Solving knapsack problems with Python using algorithms by [Martello and Toth](ht
 * Multiple 0-1 knapsack problem: MTM, MTHM
 * Change-making problem: MTC2
 * Bounded change-making problem: MTCB
-* Generalized assignment problem: MTG
+* Generalized assignment problem: MTG, MTHG
 
 Documentation is available [here](https://mknapsack.readthedocs.io).
 
@@ -153,7 +153,7 @@ profits = [[6, 9, 4, 2, 10, 3, 6],
 capacities = [11, 22]
 
 # Assign items into the knapsacks while maximizing profits
-res = solve_generalized_assignment(weights, profits, capacities)
+res = solve_generalized_assignment(profits, weights, capacities)
 ```
 
 
