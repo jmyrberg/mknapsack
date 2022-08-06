@@ -15,7 +15,7 @@ class FortranError(Exception):
 
 class FortranInputCheckError(Exception):
     """Error in Fortran source code input validation."""
-    error_codes = {
+    _error_codes = {
         'mtm': {
             -1: 'Number of items/knapsacks is either too small or large',
             -2: 'Profit, weight or capacity is <= 0',
@@ -103,9 +103,9 @@ class FortranInputCheckError(Exception):
     def __str__(self):
         if self.method is None or self.z is None:
             return 'Generic exception from Fortran side'
-        elif (self.method not in self.error_codes or
-              self.z not in self.error_codes[self.method]):
+        elif (self.method not in self._error_codes or
+              self.z not in self._error_codes[self.method]):
             return ('Generic exception from Fortran side, could not resolve '
                     f'error code {self.z}')
         else:
-            return self.error_codes[self.method][self.z]
+            return self._error_codes[self.method][self.z]
