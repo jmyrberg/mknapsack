@@ -1575,7 +1575,7 @@ c
   150 continue
       return
       end
-      subroutine defpck(m,jdimpc)
+      subroutine defpck(m,jdimpc,mask1,itwo,mask,y,dimn,dimnlev,dimpc)
 
 c*********************************************************************72
 c
@@ -1584,6 +1584,7 @@ c
 c  Modified:
 c
 c    06 December 2009
+c    28 July 2022 (jmyrberg)
 c
 c  Author:
 c
@@ -1597,8 +1598,12 @@ c    Wiley, 1990,
 c    ISBN: 0-471-92420-2,
 c    LC: QA267.7.M37.
 c
-      integer y
-      common /pack/ mask1(30),itwo(30),mask,y(150,100)
+cf2py intent(in) l, i, j, ny, mask1, itwo, mask, y, dimn, dimnlev, dimpc
+cf2py depends(dimpc) mask1, itwo
+cf2py depends(dimm) y
+cf2py depends(dimnlev) y
+      integer dimn,dimnlev,dimpc,mask
+      integer mask1(dimpc),itwo(dimpc),y(dimnlev,dimn)
       do i=1,m
         itwo(i) = 2**(i-1)
         mask1(i) = 2**(jdimpc) - 1 - itwo(i)
@@ -7030,7 +7035,8 @@ c
 
       return
       end
-      subroutine mtg ( n, m, p, w, c, minmax, z, xstar, back, jck, jb )
+      subroutine mtg ( n, m, p, w, c, minmax, z, xstar, back, jck, jb,
+     & dimn, dimnp1, dimm, dimnlev, dimpc)
 
 c*********************************************************************72
 c
@@ -7123,6 +7129,7 @@ c
 c  Modified:
 c
 c    06 December 2009
+c    28 July 2022 (jmyrberg)
 c
 c  Author:
 c
@@ -7154,6 +7161,12 @@ c          = maximum number of backtrackings to be performed,
 c            if heuristic solution is required;
 c jck      = 1 if check on the input data is desired,
 c          = 0 otherwise.
+c dimn     = number of knapsacks, such that 2 .le. n .le. jdimc=dimn
+c dimnp1   = dimn + 1
+c dimm     = number of knapsacks, such that 2 .le. m .le. jdimr=dimm
+c dimnlev  = number of branching trees
+c dimpc    = number of bits, such that m .le. jdimpc=dimpc
+c 
 c
 c meaning of the output parameters:
 c z        = value of the optimal solution if z .gt. 0 ,
@@ -7179,35 +7192,48 @@ c x(i,j) =   current solution of the relaxed problem;
 c y(l,j) =   packed solution of the relaxed problem for item  j  at
 c            level  l  of the branch-decision tree.
 c
-      integer       p(10,100),w(10,100),c(10),xstar(100),z,back
+cf2py intent(in) n, m, p, w, c, minmax, back, jck, dimn, dimnp1, dimm, dimnlev, dimpc
+cf2py intent(out) z, xstar, jb
+cf2py depend(dimn) p, w, xstar, xs, bs, b, ka, xxs, iobbl, jobbl, best, xjjub, ds, a, x, pak, kap, mind, dmyc1, dmyc2, dmyc3, dmyc4, dmyc5, dmyc6, dmyc7, dmyc8, dmyc9, dmyc10, dmyc11, dmyc12, dmyc13, dmycr1
+cf2py depend(dimnp1) ps, ws, dmycc1, dimnp1
+cf2py depend(dimm) p, w, c, dd, ud, q, pakl, ip, ir, il, if, wobbl, kq, flerp, a, x, pak, kap, mind, d, vs, v, lb, ub, y, dmyr1, dmyr2, dmyr3, dmyr4, dmyr5
+cf2py depend(dimpc) mask1, itwo
+      integer       dimn,dimnp1,dimm,dimnlev,dimpc
+      integer       mask1(dimpc), itwo(dimpc), mask
+      integer       p(dimm,dimn), w(dimm,dimn), c(dimm), xstar(dimn), z,
+     &              back
       integer       h,s,r,u,su,vc,sb,t,qh,zbound,vjjub,penalt
-      integer       dd(10),ud(10),q(10),pakl(10),ip(10),ir(10),il(10),
-     &              if(10),wobbl(10),kq(10),flrep(10)
-      integer       xs(100),bs(100),b(100),ka(100),xxs(100),iobbl(100),
-     &              jobbl(100),best(100),xjjub(100)
-      real          ds(100)
-      integer       ps(101),ws(101)
-      integer       e(150),cc(150),cs(150),type(150),us(150),ubl(150)
-      integer       a(10,100),x(10,100),pak(10,100),kap(10,100),
-     &              mind(10,100)
-      integer       d(150,10),vs(150,10),v(150,10),lb(150,10),ub(150,10)
-      integer       y
-      integer       dmyr1(10),dmyr2(10),dmyr3(10),dmyr4(10),dmyr5(10)
-      integer       dmyc1(100),dmyc2(100),dmyc3(100),dmyc4(100),
-     &              dmyc5(100),dmyc6(100),dmyc7(100),dmyc8(100),
-     &              dmyc9(100),dmyc10(100),dmyc11(100),dmyc12(100),
-     &              dmyc13(100)
-      integer       dmycc1(101),dmycc2(101)
-      real          dmycr1(100)
-
-      common /pack/ mask1(30),itwo(30),mask,y(150,100)
+      integer       dd(dimm), ud(dimm), q(dimm), pakl(dimm), ip(dimm),
+     &              ir(dimm), il(dimm),
+     &              if(dimm), wobbl(dimm), kq(dimm), flrep(dimm)
+      integer       xs(dimn), bs(dimn), b(dimn), ka(dimn), xxs(dimn),
+     &              iobbl(dimn),
+     &              jobbl(dimn), best(dimn), xjjub(dimn)
+      real          ds(dimn)
+      integer       ps(dimnp1), ws(dimnp1)
+      integer       e(dimnlev), cc(dimnlev), cs(dimnlev), type(dimnlev),
+     & us(dimnlev), ubl(dimnlev)
+      integer       a(dimm,dimn), x(dimm,dimn), pak(dimm,dimn),
+     & kap(dimm,dimn), mind(dimm,dimn)
+      integer       d(dimnlev,dimm), vs(dimnlev,dimm), v(dimnlev,dimm),
+     & lb(dimnlev,dimm), ub(dimnlev,dimm)
+      integer       y(dimnlev,dimm)
+      integer       dmyr1(dimm), dmyr2(dimm), dmyr3(dimm), dmyr4(dimm),
+     &              dmyr5(dimm)
+      integer       dmyc1(dimn), dmyc2(dimn), dmyc3(dimn),
+     &              dmyc4(dimn), dmyc5(dimn), dmyc6(dimn),
+     &              dmyc7(dimn), dmyc8(dimn), dmyc9(dimn), 
+     &              dmyc10(dimn), dmyc11(dimn), dmyc12(dimn),
+     &              dmyc13(dimn)
+      integer       dmycc1(dimnp1), dmycc2(dimnp1)
+      real          dmycr1(dimn)
 c
 c definition of the internal parameters.
 c
-      jdimr = 10
-      jdimc = 100
-      jdimpc = 30
-      jnlev = 150
+      jdimr = dimm
+      jdimc = dimn
+      jdimpc = dimpc
+      jnlev = dimnlev
       z = 0
       if ( jck .eq. 1 ) call chmtg(n,m,p,w,c,jdimr,jdimc,jdimpc,z)
       if ( z .lt. 0 ) return
@@ -7248,7 +7274,7 @@ c
 c
 c define the vectors for packing y.
 c
-      call defpck(m,jdimpc)
+      call defpck(m,jdimpc,mask1,itwo,mask,y,dimn,dimnlev,dimpc)
 c
 c compute the initial martello-toth bound (su) for the root node.
 c
@@ -7301,7 +7327,7 @@ c
         end do
   110   do j=1,n
           x(i,j) = xs(j)
-          call ydef(1,i,j,xs(j))
+          call ydef(1,i,j,xs(j),mask1,itwo,mask,y,dimn,dimnlev,dimpc)
         end do
   130 continue
       l = 1
@@ -7548,13 +7574,13 @@ c
           bs(u) = s
           go to 480
   460     if ( a(h,s) .ne. 1 ) go to 470
-          call ydef(l,h,s,1)
+          call ydef(l,h,s,1,mask1,itwo,mask,y,dimn,dimnlev,dimpc)
           isu = isu + p(h,s)
           go to 480
-  470     call ydef(l,h,s,0)
+  470     call ydef(l,h,s,0,mask1,itwo,mask,y,dimn,dimnlev,dimpc)
   480   continue
         if ( type(l) .gt. 0 ) go to 490
-        call ydef(l,h,j,1)
+        call ydef(l,h,j,1,mask1,itwo,mask,y,dimn,dimnlev,dimpc)
         isu = isu + p(h,j)
   490   index = cc(l-1)
         ihs = d(l-1,index)
@@ -7573,7 +7599,7 @@ c
      &             jdimc+1,jdimc,dmyc1,dmyc2,dmyc3,dmyc4,dmyc5)
   520   do s=1,u
           js = bs(s)
-          call ydef(l,h,js,xs(s))
+          call ydef(l,h,js,xs(s),mask1,itwo,mask,y,dimn,dimnlev,dimpc)
         end do
   540   if ( su .gt. ksu ) go to 550
         if ( type(l) .eq. 0 ) go to 550
@@ -7625,7 +7651,7 @@ c
         lb(l,r) = l
         v(l,r) = vs(l,r)
         do s=1,n
-          call yuse(l,r,s,x(r,s))
+          call yuse(l,r,s,x(r,s),mask1,itwo,mask,y,dimn,dimnlev,dimpc)
         end do
       end do
 
@@ -7633,7 +7659,7 @@ c
   620 lb(l,h) = l
       v(l,h) = vs(l,h)
       do s=1,n
-        call yuse(l,h,s,x(h,s))
+        call yuse(l,h,s,x(h,s),mask1,itwo,mask,y,dimn,dimnlev,dimpc)
       end do
   640 a(h,j) = 1
       b(j) = 0
@@ -7684,7 +7710,7 @@ c
         a(index,j) = 0
   730 continue
       do s=1,n
-        call yuse(ls,h,s,x(h,s))
+        call yuse(ls,h,s,x(h,s),mask1,itwo,mask,y,dimn,dimnlev,dimpc)
       end do
       go to 690
   750 do 770 u=1,t
@@ -7695,7 +7721,7 @@ c
         v(l,r) = v(l1,r)
         a(r,j) = 0
         do 760 s=1,n
-          call yuse(ls,r,s,x(r,s))
+          call yuse(ls,r,s,x(r,s),mask1,itwo,mask,y,dimn,dimnlev,dimpc)
   760   continue
   770 continue
       go to 690
@@ -7706,7 +7732,7 @@ c
       lb(l,h) = ls
       v(l,h) = v(l1,h)
       do s=1,n
-        call yuse(ls,h,s,x(h,s))
+        call yuse(ls,h,s,x(h,s),mask1,itwo,mask,y,dimn,dimnlev,dimpc)
       end do
       cc(l) = cc(l) + 1
       index = cc(l)
@@ -7714,13 +7740,13 @@ c
       lb(l,h) = l
       v(l,h) = vs(l,h)
       do s=1,n
-        call yuse(l,h,s,x(h,s))
+        call yuse(l,h,s,x(h,s),mask1,itwo,mask,y,dimn,dimnlev,dimpc)
       end do
       go to 850
   810 lb(l,h) = l
       v(l,h) = vs(l,h)
       do s=1,n
-        call yuse(l,h,s,x(h,s))
+        call yuse(l,h,s,x(h,s),mask1,itwo,mask,y,dimn,dimnlev,dimpc)
       end do
       cc(l) = cc(l) + 1
       index = cc(l)
@@ -7729,7 +7755,7 @@ c
       lb(l,h) = ls
       v(l,h) = v(l1,h)
       do s=1,n
-        call yuse(ls,h,s,x(h,s))
+        call yuse(ls,h,s,x(h,s),mask1,itwo,mask,y,dimn,dimnlev,dimpc)
       end do
       if ( cc(l) .lt. cs(l) ) go to 850
       if ( us(l) .le. z ) go to 850
@@ -12393,7 +12419,7 @@ c
       loc = maxl - 1
       return
       end
-      subroutine ydef(l,i,j,ny)
+      subroutine ydef(l,i,j,ny,mask1,itwo,mask,y,dimn,dimnlev,dimpc)
 
 c*********************************************************************72
 c
@@ -12402,6 +12428,7 @@ c
 c  Modified:
 c
 c    06 December 2009
+c    28 July 2022 (jmyrberg)
 c
 c  Author:
 c
@@ -12415,14 +12442,18 @@ c    Wiley, 1990,
 c    ISBN: 0-471-92420-2,
 c    LC: QA267.7.M37.
 c
-      integer       y
-      common /pack/ mask1(30),itwo(30),mask,y(150,100)
+cf2py intent(in) l, i, j, ny, mask1, itwo, mask, y, dimn, dimnlev, dimpc
+cf2py depends(dimpc) mask1, itwo
+cf2py depends(dimm) y
+cf2py depends(dimnlev) y
+      integer dimn,dimnlev,dimpc,mask
+      integer mask1(dimpc),itwo(dimpc),y(dimnlev,dimn)
       iylj = y(l,j)
       imask1 = mask1(i)
       y(l,j) = iand ( iylj, imask1 ) + ny*itwo(i)
       return
       end
-      subroutine yuse(l,i,j,ny)
+      subroutine yuse(l,i,j,ny,mask1,itwo,mask,y,dimn,dimnlev,dimpc)
 
 c*********************************************************************72
 c
@@ -12444,8 +12475,12 @@ c    Wiley, 1990,
 c    ISBN: 0-471-92420-2,
 c    LC: QA267.7.M37.
 c
-      integer       y
-      common /pack/ mask1(30),itwo(30),mask,y(150,100)
+cf2py intent(in) l, i, j, ny, mask1, itwo, mask, y, dimn, dimnlev, dimpc
+cf2py depends(dimpc) mask1, itwo
+cf2py depends(dimm) y
+cf2py depends(dimnlev) y
+      integer dimn,dimnlev,dimpc,mask
+      integer mask1(dimpc),itwo(dimpc),y(dimnlev,dimn)
       iyit = y(l,j)/itwo(i)
       imask = mask
 

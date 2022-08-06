@@ -13,6 +13,7 @@ Solving knapsack problems with Python using algorithms by [Martello and Toth](ht
 * Multiple 0-1 knapsack problem: MTM, MTHM
 * Change-making problem: MTC2
 * Bounded change-making problem: MTCB
+* Generalized assignment problem: MTG
 
 Documentation is available [here](https://mknapsack.readthedocs.io).
 
@@ -28,7 +29,7 @@ Documentation is available [here](https://mknapsack.readthedocs.io).
      * `conda install -c conda-forge m2w64-toolchain_win-64`, or
      * [Install MSYS2](https://www.msys2.org) and `pacman -S --needed base-devel mingw-w64-x86_64-toolchain`
 
-2. `pip install -U mknapsack`
+2. `pip install mknapsack`
 
 
 ## Example usage
@@ -134,6 +135,27 @@ capacity = 190
 # Fill the knapsack while minimizing the number of items
 res = solve_bounded_change_making(weights, n_items, capacity)
 ```
+
+### Generalized Assignment Problem
+
+```python
+from mknapsack import solve_generalized_assignment
+
+# Given seven item types with the following knapsack dependent weights:
+weights = [[4, 1, 2, 1, 4, 3, 8],
+           [9, 9, 8, 1, 3, 8, 7]]
+
+# ...and the following knapsack dependent weights:
+profits = [[6, 9, 4, 2, 10, 3, 6],
+           [4, 8, 9, 1, 7, 5, 4]]
+
+# ...and two knapsack with the following capacities:
+capacities = [11, 22]
+
+# Assign items into the knapsacks while maximizing profits
+res = solve_generalized_assignment(weights, profits, capacities)
+```
+
 
 ## References
 

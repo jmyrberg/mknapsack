@@ -9,13 +9,16 @@ def preprocess_array(ar, dtype='int32'):
     return np.array(ar, dtype=dtype, order='F')
 
 
-def pad_array(ar, width):
-    """Pad array with zeros to given length."""
-    assert ar.ndim == 1
-    new_ar = np.zeros((width, ), dtype=ar.dtype, order='F')
-    n = len(ar)
-    new_ar[:n] = ar
-    return new_ar
+def pad_array(ar, width, axis=0):
+    """Pad one or two-dimensional array with zeros."""
+    assert ar.ndim <= 2
+    if axis == 0:
+        pad_width = ((0, 0), (0, width - ar.shape[0]))
+    else:
+        pad_width = ((0, width - ar.shape[1]), (0, 0))
+    ar = np.atleast_2d(ar)
+    padded = np.pad(ar, pad_width, mode='constant')
+    return padded if ar.ndim == 2 else padded.flatten()
 
 
 def check_all_int(ar):

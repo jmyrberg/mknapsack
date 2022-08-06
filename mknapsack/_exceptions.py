@@ -79,6 +79,15 @@ class FortranInputCheckError(Exception):
                 'greater than knapsack capacity',
             -5: 'Total weight of all items is smaller than or equal to '
                 'knapsack capacity'
+        },
+        'mtg': {
+            -1: 'Number of knapsacks is less than 2',
+            -2: 'Number of items is less than 2',
+            -3: 'Number of knapsacks cannot be larger than number of bits - 2',
+            -4: 'Profit, weight, or capacity is <= 0',
+            -5: 'One or more of weights is greater than knapsack capacity',
+            -6: 'One or more knapsacks cannot fit any items',
+            -7: 'Number of branching trees is too small for the problem size'
         }
     }
 
