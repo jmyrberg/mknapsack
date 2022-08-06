@@ -7854,6 +7854,8 @@ c all the parameters are integer. on return of mthg all the input
 c parameters are unchanged, but  p(i,j)  is set to  0  for all pairs
 c (i,j)  such that  w(i,j) .gt. c(i) .
 c
+cf2py intent(in) n, m, p, w, c, minmax, jck
+cf2py intent(out) z, xstar
       integer p(50,500),w(50,500),c(50),xstar(500),z
       integer zm
       integer best(500)
