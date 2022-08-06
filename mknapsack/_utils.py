@@ -10,12 +10,12 @@ def preprocess_array(ar, dtype='int32'):
 
 
 def pad_array(ar, width):
-    """Pad array with zeros to given length."""
-    assert ar.ndim == 1
-    new_ar = np.zeros((width, ), dtype=ar.dtype, order='F')
-    n = len(ar)
-    new_ar[:n] = ar
-    return new_ar
+    """Pad one or two-dimensional array with zeros."""
+    if ar.ndim == 1:
+        pad_width = (0, width - ar.shape[0])
+    elif ar.ndim == 2:
+        pad_width = ((0, width[0] - ar.shape[0]), (0, width[1] - ar.shape[1]))
+    return np.pad(ar, pad_width, mode='constant')
 
 
 def check_all_int(ar):

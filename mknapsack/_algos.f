@@ -7179,6 +7179,8 @@ c x(i,j) =   current solution of the relaxed problem;
 c y(l,j) =   packed solution of the relaxed problem for item  j  at
 c            level  l  of the branch-decision tree.
 c
+cf2py intent(in) n, m, p, w, c, minmax, back, jck
+cf2py intent(out) z, xstar, jb
       integer       p(10,100),w(10,100),c(10),xstar(100),z,back
       integer       h,s,r,u,su,vc,sb,t,qh,zbound,vjjub,penalt
       integer       dd(10),ud(10),q(10),pakl(10),ip(10),ir(10),il(10),
