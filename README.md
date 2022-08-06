@@ -149,7 +149,7 @@ profits = [[6, 9, 4, 2, 10, 3, 6],
 weights = [[4, 1, 2, 1, 4, 3, 8],
            [9, 9, 8, 1, 3, 8, 7]]
 
-# ...and two knapsack with the following capacities:
+# ...and two knapsacks with the following capacities:
 capacities = [11, 22]
 
 # Assign items into the knapsacks while maximizing profits
