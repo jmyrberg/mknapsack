@@ -141,13 +141,13 @@ res = solve_bounded_change_making(weights, n_items, capacity)
 ```python
 from mknapsack import solve_generalized_assignment
 
-# Given seven item types with the following knapsack dependent weights:
-weights = [[4, 1, 2, 1, 4, 3, 8],
-           [9, 9, 8, 1, 3, 8, 7]]
-
-# ...and the following knapsack dependent weights:
+# Given seven item types with the following knapsack dependent profits:
 profits = [[6, 9, 4, 2, 10, 3, 6],
            [4, 8, 9, 1, 7, 5, 4]]
+
+# ...and the following knapsack dependent weights:
+weights = [[4, 1, 2, 1, 4, 3, 8],
+           [9, 9, 8, 1, 3, 8, 7]]
 
 # ...and two knapsack with the following capacities:
 capacities = [11, 22]
