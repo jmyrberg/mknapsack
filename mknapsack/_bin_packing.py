@@ -1,4 +1,4 @@
-"""Module for solving change-making problem."""
+"""Module for solving bin packing problem."""
 
 
 import logging
@@ -7,41 +7,40 @@ from typing import List, Optional
 
 import numpy as np
 
-from mknapsack._algos import mtc2
-from mknapsack._exceptions import FortranInputCheckError, NoSolutionError
+from mknapsack._algos import mtp
+from mknapsack._exceptions import FortranInputCheckError
 from mknapsack._utils import preprocess_array, pad_array
 
 
 logger = logging.getLogger(__name__)
 
 
-def solve_change_making(
+def solve_bin_packing(
     weights: List[int],
     capacity: int,
-    method: str = 'mtc2',
+    method: str = 'mtp',
     method_kwargs: Optional[dict] = None,
     verbose: bool = False
 ) -> np.ndarray:
-    """Solves the change-making problem.
+    """Solves the bin packing problem.
 
-    Given a set of item types with weights and a knapsack with capacity, find
-    the minimum number of items that add up to the capacity.
+    Given a set of items with weights, assign each item exactly to one bin
+    while minimizing the number of bins required.
 
     Args:
-        weights: Weight of each item type.
-        capacity: Capacity of knapsack.
+        weights: Weight of each item.
+        capacity: Capacity of the bins.
         method:
             Algorithm to use for solving, should be one of
 
-                - 'mtc2' - provides a fast heuristical solution that might not
-                  be the global optimum, but is suitable for larger problems,
-                  or an exact solution if required
+                - 'mtp' - provides a fast heuristical solution or an exact
+                  solution if required
 
-            Defaults to 'mtc2'.
+            Defaults to 'mtp'.
         method_kwargs:
             Keyword arguments to pass to a given `method`.
 
-                - 'mtc2'
+                - 'mtp'
                     * **require_exact** (int, optional) - Whether to require an
                       exact solution or not (0=no, 1=yes). Defaults to 0.
                     * **max_backtracks** (int, optional) - The maximum number
@@ -54,10 +53,9 @@ def solve_change_making(
         verbose: Log details of the solution. Defaults to False.
 
     Returns:
-        np.ndarray: Number of items for each item type.
+        np.ndarray: Assigned bin for each item.
 
     Raises:
-        NoSolutionError: No feasible solution found.
         FortranInputCheckError: Something is wrong with the inputs when
             validated in the original Fortran source code side.
         ValueError: Something is wrong with the given inputs.
@@ -65,11 +63,11 @@ def solve_change_making(
     Example:
         .. code-block:: python
 
-            from mknapsack import solve_change_making
+            from mknapsack import solve_bin_packing
 
-            res = solve_change_making(
-                weights=[18, 9, 23, 20, 59, 61, 70, 75, 76, 30],
-                capacity=190
+            res = solve_bin_packing(
+                weights=[4, 1, 8, 1, 4, 2],
+                capacity=10
             )
 
     References:
@@ -81,36 +79,42 @@ def solve_change_making(
           <https://people.sc.fsu.edu/~jburkardt/f77_src/knapsack/knapsack.f>`_
     """
     weights = preprocess_array(weights)
-
     n = len(weights)
+
+    # Sort items by weight in descending order
+    items_reorder = weights.argsort()[::-1]
+    items_reorder_reverse = items_reorder.argsort()
+    weights = weights[items_reorder]
 
     method = method.lower()
     method_kwargs = method_kwargs or {}
-    if method == 'mtc2':
-        jdn = n + 1
-        jdl = np.max(weights) - 1
-        w = pad_array(weights, jdn)
-        z, x = mtc2(
+    if method == 'mtp':
+        jdim = n
+        w = pad_array(weights, jdim)
+
+        if method_kwargs.get('require_exact', 0):
+            back = -1
+        else:
+            back = method_kwargs.get('max_backtracks', 100_000)
+
+        z, x, lb = mtp(
             n=n,
             w=w,
             c=capacity,
-            jdn=jdn,
-            jdl=jdl,
-            jfo=method_kwargs.get('require_exact', 0),
-            back=method_kwargs.get('max_backtracks', 100_000),
+            jdim=jdim,
+            back=back,
             jck=method_kwargs.get('check_inputs', 1)
         )
 
-        if z == 0:
-            raise NoSolutionError('No feasible solution found')
-        elif z < 0:
+        if z < 0:
             raise FortranInputCheckError(method=method, z=z)
 
         if verbose:
             logger.info(f'Method: "{method}"')
-            logger.info(f'Total number of items: {z}')
+            logger.info(f'Total profit: {z}')
             logger.info(f'Solution vector: {x}')
+            logger.info(f'Lower bound: {lb}')
     else:
         raise ValueError(f'Given method "{method}" not known')
 
-    return np.array(x)[:n]
+    return np.array(x)[:n][items_reorder_reverse]

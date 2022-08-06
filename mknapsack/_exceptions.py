@@ -99,6 +99,12 @@ class FortranInputCheckError(Exception):
             -3: 'Profit, weight, or capacity is <= 0',
             -4: 'One or more of weights is greater than knapsack capacity',
             -5: 'One or more knapsacks cannot fit any items'
+        },
+        'mtp': {
+            -1: 'Number of items is less than 2',
+            -2: 'Item weight or bin capacity is <= 0',
+            -3: 'One or more of weights is greater than bin capacity',
+            -4: 'Weights should be in ascending order'
         }
     }
 

@@ -14,6 +14,7 @@ Solving knapsack problems with Python using algorithms by [Martello and Toth](ht
 * Change-making problem: MTC2
 * Bounded change-making problem: MTCB
 * Generalized assignment problem: MTG, MTHG
+* Bin packing problem: MTP
 
 Documentation is available [here](https://mknapsack.readthedocs.io).
 
@@ -154,6 +155,21 @@ capacities = [11, 22]
 
 # Assign items into the knapsacks while maximizing profits
 res = solve_generalized_assignment(profits, weights, capacities)
+```
+
+### Bin Packing Problem
+
+```python
+from mknapsack import solve_bin_packing
+
+# Given six items with the following weights:
+weights = [4, 1, 8, 1, 4, 2]
+
+# ...and bins with the following capacity:
+capacity = 10
+
+# Assign items into bins while minimizing the number of bins required
+res = solve_bin_packing(weights, capacity)
 ```
 
 

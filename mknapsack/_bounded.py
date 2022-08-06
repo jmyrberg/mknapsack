@@ -46,6 +46,7 @@ def solve_bounded_knapsack(
                   inputs or not (0=no, 1=yes). Defaults to 1.
 
             Defaults to None.
+        verbose: Log details of the solution. Defaults to False.
 
     Returns:
         np.ndarray: Number of items assigned to the knapsack for each item
@@ -85,7 +86,7 @@ def solve_bounded_knapsack(
             'Profits length must be equal to weights and n_items '
             f'(not {len(profits) == len(weights) == len(n_items)}')
 
-    # Sort items by profit/ratio ratio in ascending order
+    # Sort items by profit/weights ratio in ascending order
     items_reorder = (profits / weights).argsort()[::-1]
     items_reorder_reverse = np.argsort(items_reorder)
     profits = profits[items_reorder]

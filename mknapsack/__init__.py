@@ -2,6 +2,7 @@
 
 
 __all__ = [
+    'solve_bin_packing',
     'solve_bounded_knapsack',
     'solve_bounded_change_making',
     'solve_change_making',
@@ -28,6 +29,7 @@ if sys.platform == 'win32' and os.path.isdir(extra_dll_dir):
 from mknapsack._exceptions import FortranInputCheckError, NoSolutionError, \
     ProblemSizeError  # noqa: E402
 
+from mknapsack._bin_packing import solve_bin_packing  # noqa: E402
 from mknapsack._bounded import solve_bounded_knapsack  # noqa: E402
 from mknapsack._bounded_change_making import solve_bounded_change_making  # noqa: E402, E501
 from mknapsack._change_making import solve_change_making  # noqa: E402
