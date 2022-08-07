@@ -15,6 +15,7 @@ Solving knapsack problems with Python using algorithms by [Martello and Toth](ht
 * Bounded change-making problem: MTCB
 * Generalized assignment problem: MTG, MTHG
 * Bin packing problem: MTP
+* Subset sum problem: MTSL
 
 Documentation is available [here](https://mknapsack.readthedocs.io).
 
@@ -170,6 +171,21 @@ capacity = 10
 
 # Assign items into bins while minimizing the number of bins required
 res = solve_bin_packing(weights, capacity)
+```
+
+### Subset Sum Problem
+
+```python
+from mknapsack import solve_subset_sum
+
+# Given six items with the following weights:
+weights = [4, 1, 8, 1, 4, 2]
+
+# ...and a knapsack with the following capacity:
+capacity = 10
+
+# Choose items to fill the knapsack to the fullest
+res = solve_subset_sum(weights, capacity)
 ```
 
 

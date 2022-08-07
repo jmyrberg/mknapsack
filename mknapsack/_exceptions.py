@@ -105,6 +105,12 @@ class FortranInputCheckError(Exception):
             -2: 'Item weight or bin capacity is <= 0',
             -3: 'One or more of weights is greater than bin capacity',
             -4: 'Weights should be in ascending order'
+        },
+        'mtsl': {
+            -1: 'Number of items is less than 2',
+            -2: 'Item weight or bin capacity is <= 0',
+            -3: 'One or more of weights is greater than bin capacity',
+            -4: 'Total weight is smaller than knapsack capacity'
         }
     }
 

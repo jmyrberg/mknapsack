@@ -9,6 +9,7 @@ __all__ = [
     'solve_generalized_assignment',
     'solve_multiple_knapsack',
     'solve_single_knapsack',
+    'solve_subset_sum',
     'solve_unbounded_knapsack',
     'FortranInputCheckError',
     'NoSolutionError',
@@ -36,4 +37,5 @@ from mknapsack._change_making import solve_change_making  # noqa: E402
 from mknapsack._generalized_assignment import solve_generalized_assignment  # noqa: E402, E501
 from mknapsack._multiple import solve_multiple_knapsack  # noqa: E402
 from mknapsack._single import solve_single_knapsack  # noqa: E402
+from mknapsack._subset_sum import solve_subset_sum  # noqa: E402
 from mknapsack._unbounded import solve_unbounded_knapsack  # noqa: E402

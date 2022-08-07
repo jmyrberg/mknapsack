@@ -9086,6 +9086,12 @@ c
 c all the parameters are integer. on return of mtsl all the input
 c parameters are unchanged.
 c
+cf2py intent(in) n, w, c, jdn, jdd, itmm, jck
+cf2py intent(out) z, x
+cf2py intent(hide) wo, ind, xx, ws, zs, sum, td1, td2, td3
+cf2py depend(jdn) w, x
+cf2py depend(itmm) wo, ind, xx, ws, zs, sum
+cf2py depend(jdd) td1, td2, td3
       integer w(jdn),x(jdn),c,z
       integer wo(itmm),ind(itmm),xx(itmm),ws(itmm),zs(itmm),sum(itmm)
       integer td1(jdd,2),td2(jdd,2),td3(jdd,2)
