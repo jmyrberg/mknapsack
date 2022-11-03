@@ -11,7 +11,6 @@ jobs:
 
   tag:
     name: Tag release with latest
-    needs: [build-and-release]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -45,6 +44,7 @@ jobs:
 
   draft-release:
     name: Draft release and upload distribution to Test PyPi
+    needs: [tag]
     runs-on: ubuntu-latest
     permissions:
       contents: write
