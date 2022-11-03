@@ -33,7 +33,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Advance latest tag
-        uses: actions/github-script@v3
+        uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}          
           script: |
