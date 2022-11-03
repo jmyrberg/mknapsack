@@ -42,7 +42,7 @@ docs = [
 
 [build-system]
 requires = [
-    "setuptools",
+    "setuptools<64.0",
     "numpy",
     "wheel",
     "versioneer[toml]==0.28"
