@@ -1,7 +1,6 @@
 # Custom
 docs/*/*build*
 notebooks/
-_version.py
 .DS_Store
 .vscode/
 scripts/

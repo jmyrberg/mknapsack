@@ -1,6 +1,11 @@
 """Solving knapsack problems with Python."""
 
 
+from . import _version
+
+
+__version__ = _version.get_versions()['version']
+
 __all__ = [
     'solve_bin_packing',
     'solve_bounded_knapsack',

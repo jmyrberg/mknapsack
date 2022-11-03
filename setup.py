@@ -1,3 +1,5 @@
+import versioneer
+
 from numpy.distutils.core import setup, Extension
 
 
@@ -12,4 +14,8 @@ ext_modules = [
 
 
 if __name__ == '__main__':
-    setup(ext_modules=ext_modules)
+    setup(
+        version=versioneer.get_version(),
+        cmdclass=versioneer.get_cmdclass(),
+        ext_modules=ext_modules
+    )

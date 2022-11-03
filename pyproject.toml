@@ -26,8 +26,8 @@ dev = [
     "numpy",
     "pytest",
     "setuptools",
-    "setuptools-scm",
     "twine",
+    "versioneer",
     "wheel"
 ]
 docs = [
@@ -43,9 +43,9 @@ docs = [
 [build-system]
 requires = [
     "setuptools",
-    "setuptools-scm",
     "numpy",
-    "wheel"
+    "wheel",
+    "versioneer[toml]==0.28"
 ]
 build-backend = "setuptools.build_meta"
 
@@ -55,6 +55,10 @@ include = [
     "tests*"
 ]
 
-[tool.setuptools_scm]
-write_to = "mknapsack/_version.py"
-local_scheme = "no-local-version"
+[tool.versioneer]
+VCS = "git"
+style = "pep440-pre"
+versionfile_source = "mknapsack/_version.py"
+versionfile_build = "mknapsack/_version.py"
+tag_prefix = ""
+parentdir_prefix = "mknapsack-"

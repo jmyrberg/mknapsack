@@ -13,7 +13,6 @@
 import os
 import sys
 
-from setuptools_scm import get_version
 
 sys.path.insert(0, os.path.abspath('../../'))
 
@@ -25,9 +24,10 @@ copyright = '2022, Jesse Myrberg'
 author = 'Jesse Myrberg'
 
 # The full version, including alpha/beta/rc tags
-release = get_version('../../')
-if '+' in release:
-    release = release.split('+')[0]
+# https://github.com/python-versioneer/python-versioneer/issues/185
+from mknapsack._version import get_versions  # noqa: E402
+release = get_versions()['version']
+del get_versions
 
 
 # -- General configuration ---------------------------------------------------
