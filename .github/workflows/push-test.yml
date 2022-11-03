@@ -24,7 +24,7 @@ jobs:
           script: |
             try {
               console.log("Trying to delete existing 'latest' tag...")
-              await github.git.deleteRef({
+              await github.rest.git.deleteRef({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 ref: "tags/1.1.7"
@@ -34,7 +34,7 @@ jobs:
               console.log("The tag doesn't exist yet: " + e)
             }
             console.log("Tagging commit '" + context.sha + "' with 'latest'...")
-            await github.git.createRef({
+            await github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: "refs/tags/1.1.7",
