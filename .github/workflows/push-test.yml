@@ -4,9 +4,6 @@ on:
   push:
     branches: [feature/use-versioneer]
 
-permissions:
-  contents: read
-
 jobs:
 
   tag:
