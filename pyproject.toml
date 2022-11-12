@@ -42,7 +42,7 @@ docs = [
 
 [build-system]
 requires = [
-    "setuptools",
+    "setuptools<60.0",
     "setuptools-scm",
     "numpy",
     "wheel"
