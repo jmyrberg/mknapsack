@@ -8,7 +8,6 @@ jobs:
 
   tag:
     name: Tag release with latest
-    needs: [build-and-release]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
