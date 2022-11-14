@@ -1,0 +1,41 @@
+name: Advance 'latest' tag
+
+on:
+  release:
+    types: [published]
+
+jobs:
+
+  tag:
+    name: Tag release with latest
+    needs: [build-and-release]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Advance latest tag
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}          
+          script: |
+            try {
+              console.log("Trying to delete existing 'latest' tag...")
+              await github.git.deleteRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: "tags/latest"
+              })
+              console.log("Deleted existing tag!")
+            } catch (e) {
+              console.log("The tag doesn't exist yet: " + e)
+            }
+            console.log("Tagging commit '" + context.sha + "' with 'latest'...")
+            await github.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: "refs/tags/latest",
+              sha: context.sha
+            })
+            console.log("Tagging done!")
