@@ -35,16 +35,20 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install Python dependencies
+        env:
+          # Latest setuptools enables supports pyproject.toml editable install
+          # ...but fails to build the extensions
+          SETUPTOOLS_ENABLE_FEATURES: legacy-editable
         run: |
           python -m pip install --upgrade pip
-          pip install -e .
-          pip install -r requirements-dev.txt
+          pip install -e .[test]
       - name: Test with pytest
         run: |
           pytest -vv
 
   draft-release:
     name: Draft release
+    needs: [test]
     runs-on: ubuntu-latest
     permissions:
       contents: write
