@@ -7,7 +7,7 @@ import pytest
 from mknapsack._change_making import solve_change_making
 from mknapsack._exceptions import FortranInputCheckError, NoSolutionError
 
-from tests.utils import get_id
+from mknapsack.tests.utils import get_id
 
 
 change_making_case_small = {

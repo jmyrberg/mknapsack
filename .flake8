@@ -2,4 +2,4 @@
 max-line-length = 79
 exclude = .svn,CVS,.bzr,.hg,.git,__pycache__,.eggs,*.egg,*/_vendor/*,node_modules
 per-file-ignores =
-     tests/test__generalized_assignment.py: E127, E128, E131, E201
+     mknapsack/tests/test__generalized_assignment.py: E127, E128, E131, E201

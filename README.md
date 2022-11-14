@@ -1,6 +1,7 @@
 # mknapsack
 
 [![CICD](https://github.com/jmyrberg/mknapsack/actions/workflows/push.yml/badge.svg)](https://github.com/jmyrberg/mknapsack/actions/workflows/push.yml)
+[![Build](https://github.com/jmyrberg/mknapsack/actions/workflows/wheels.yml/badge.svg)](https://github.com/jmyrberg/mknapsack/actions/workflows/wheels.yml)
 [![Documentation](https://readthedocs.org/projects/mknapsack/badge/?version=latest)](https://mknapsack.readthedocs.io/en/latest/?badge=latest)
 
 ![mknapsack cover](https://github.com/jmyrberg/mknapsack/blob/master/docs/cover.png?raw=true)
@@ -22,16 +23,7 @@ Documentation is available [here](https://mknapsack.readthedocs.io).
 
 ## Installation
 
-1. Install Fortran compiler, if you don't already have it
-   * MacOS / Linux:
-    `brew install gcc`
-   * Linux / Windows Subsystem for Linux:
-     `sudo apt-get install gfortran`
-   * Windows (experimental):
-     * `conda install -c conda-forge m2w64-toolchain_win-64`, or
-     * [Install MSYS2](https://www.msys2.org) and `pacman -S --needed base-devel mingw-w64-x86_64-toolchain`
-
-2. `pip install mknapsack`
+`pip install mknapsack`
 
 
 ## Example usage

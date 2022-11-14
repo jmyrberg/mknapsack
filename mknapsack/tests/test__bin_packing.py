@@ -7,7 +7,7 @@ import pytest
 from mknapsack._bin_packing import solve_bin_packing
 from mknapsack._exceptions import FortranInputCheckError
 
-from tests.utils import get_id
+from mknapsack.tests.utils import get_id
 
 
 bin_packing_case_small = {

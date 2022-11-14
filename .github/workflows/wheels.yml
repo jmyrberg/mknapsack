@@ -1,0 +1,102 @@
+name: Build
+
+on:
+  push:
+    branches: [master]
+  release:
+    types: [published]
+
+env:
+  IS_PUSH: ${{ github.event_name == 'push' }}
+
+jobs:
+  build-sdist:
+    name: Build source distribution
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Install Fortran compiler on Linux
+        if: contains(matrix.os, 'ubuntu')
+        run: |
+          sudo apt-get install -y gfortran
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install build
+      - name: Build source distribution
+        run: |
+          python -m build --sdist --outdir dist/ .
+      - uses: actions/upload-artifact@v3
+        with:
+          path: ./dist/*.tar.gz
+
+  build-wheels:
+    name: Build wheels on ${{ matrix.buildplat[0] }}-${{ matrix.buildplat[1] }}
+    runs-on: ${{ matrix.buildplat[0] }}
+    strategy:
+      fail-fast: false
+      matrix:
+        buildplat:
+          - [ubuntu-latest, manylinux_x86_64]
+          - [macos-latest, macosx_x86_64]
+          - [windows-latest, win_amd64]
+          # TODO: Add when GHA supports
+          # - [macos-latest, macosx_arm64]
+          # - [windows-latest, win32]
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Install Fortran compiler on MacOS
+        if: contains(matrix.buildplat[0], 'macos')
+        run: |
+          brew unlink gcc && brew link gcc
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.11.2
+        env:
+          CIBW_BUILD: "*${{ matrix.buildplat[1] }}"
+      - uses: actions/upload-artifact@v3
+        with:
+          path: ./wheelhouse/*.whl
+
+  upload-test-pypi:
+    name: Upload to Test PyPi
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    needs: [build-sdist, build-wheels]
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: artifact
+          path: dist
+      - uses: actions/setup-python@v3
+      - name: Upload artifacts to Test PyPi
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install twine
+          twine upload -r testpypi dist/*
+
+  upload-pypi:
+    name: Upload to PyPi
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    needs: [build-sdist, build-wheels]
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: artifact
+          path: dist
+      - uses: actions/setup-python@v3
+      - name: Upload artifacts to PyPi
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install twine
+          twine upload dist/*
