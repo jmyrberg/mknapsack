@@ -35,6 +35,9 @@ docs = [
     "piccolo-theme",
     "sphinx"
 ]
+test = [
+    "pytest"
+]
 
 [project.urls]
 "Homepage" = "https://github.com/jmyrberg/mknapsack"
@@ -42,19 +45,23 @@ docs = [
 
 [build-system]
 requires = [
-    "setuptools<60.0",
+    "setuptools>=51.0.0",
     "setuptools-scm",
-    "numpy",
-    "wheel"
+    "numpy"
 ]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 include = [
-    "mknapsack*",
-    "tests*"
+    "mknapsack*"
 ]
 
 [tool.setuptools_scm]
 write_to = "mknapsack/_version.py"
 local_scheme = "no-local-version"
+
+[tool.cibuildwheel]
+skip = 'pp*'
+build-verbosity = "3"
+test-extras = ["test"]
+test-command = "pytest -vv --import-mode=importlib {package}"

@@ -8,7 +8,7 @@ from mknapsack._generalized_assignment import solve_generalized_assignment
 from mknapsack._exceptions import FortranInputCheckError, NoSolutionError, \
     ProblemSizeError
 
-from tests.utils import get_id
+from mknapsack.tests.utils import get_id
 
 
 generalized_assignment_case_small = {

@@ -7,7 +7,7 @@ import pytest
 from mknapsack._unbounded import solve_unbounded_knapsack
 from mknapsack._exceptions import FortranInputCheckError
 
-from tests.utils import get_id
+from mknapsack.tests.utils import get_id
 
 
 unbounded_knapsack_case_small = {

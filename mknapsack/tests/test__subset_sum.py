@@ -7,7 +7,7 @@ import pytest
 from mknapsack._subset_sum import solve_subset_sum
 from mknapsack._exceptions import FortranInputCheckError
 
-from tests.utils import get_id
+from mknapsack.tests.utils import get_id
 
 
 subset_sum_case_small = {

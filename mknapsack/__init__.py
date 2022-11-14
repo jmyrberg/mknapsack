@@ -17,15 +17,16 @@ __all__ = [
 ]
 
 import os
-import sys
-
 
 # .libs -folder must be added to dll for Windows and Python >=3.8
-# https://github.com/numpy/numpy/issues/14923
-extra_dll_dir = os.path.join(os.path.dirname(__file__), '.libs')
-if sys.platform == 'win32' and os.path.isdir(extra_dll_dir):
-    os.add_dll_directory(extra_dll_dir)
-
+# https://github.com/isuruf/scipy-feedstock/blob/c36d45b104fc7310f1f4ca45aefd321b2f9b6c59/recipe/_distributor_init.py
+basedir = os.path.dirname(__file__)
+extra_dll_dir = os.path.abspath(os.path.join(basedir, '.libs'))
+if os.name == 'nt' and os.path.isdir(extra_dll_dir):
+    import glob
+    from ctypes import WinDLL
+    for filename in glob.glob(os.path.join(extra_dll_dir, '*dll')):
+        WinDLL(os.path.abspath(filename))
 
 from mknapsack._exceptions import FortranInputCheckError, NoSolutionError, \
     ProblemSizeError  # noqa: E402
