@@ -27,7 +27,7 @@ author = 'Jesse Myrberg'
 
 # The full version, including alpha/beta/rc tags
 release = version('mknapsack')
-version = '.'.join(release.split('.')[:2])
+version = '.'.join(release.split('.')[:3])
 
 
 # -- General configuration ---------------------------------------------------
