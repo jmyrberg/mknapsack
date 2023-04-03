@@ -20,4 +20,4 @@ def pad_array(ar, width):
 
 def check_all_int(ar):
     """Check if all input values are integers."""
-    return all(i == 0 or i % int(i) == 0 for i in ar)
+    return all(i - int(i) == 0 for i in ar)
