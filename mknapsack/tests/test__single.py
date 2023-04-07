@@ -19,6 +19,15 @@ single_knapsack_case_small = {
     'solution': [0, 1, 1, 1, 1, 1, 1, 0, 0, 0]
 }
 
+single_knapsack_case_small_real = {
+    'case': 'small-real',
+    'profits': [16, 78, 35, 89, 36, 94, 75, 74, 100, 80],
+    'weights': [30, 18, 0.4, 23, 20, 59, 61, 70, 75, 76],
+    'capacity': 190,
+    'total_profit': 407,
+    'solution': [0, 1, 1, 1, 1, 1, 1, 0, 0, 0]
+}
+
 single_knapsack_case_small_reverse = {  # Ensure ordering works
     'case': 'small-reverse',
     'profits': [16, 78, 35, 89, 36, 94, 75, 74, 100, 80][::-1],
@@ -71,6 +80,7 @@ single_knapsack_success_cases = [
     {'method': 'mt2', **single_knapsack_case_large},
     {'method': 'mt1r', **single_knapsack_case_small, 'tolerance': 1e-07},
     {'method': 'mt1r', **single_knapsack_case_medium, 'tolerance': 1e-07},
+    {'method': 'mt1r', **single_knapsack_case_small_real, 'tolerance': 1e-07},
     {'method': 'mt1r', **single_knapsack_case_medium_real, 'tolerance': 1e-07}
 ]
 
