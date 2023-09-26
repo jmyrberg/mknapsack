@@ -2,6 +2,7 @@
 
 
 import logging
+import warnings
 
 from typing import List, Optional
 
@@ -123,7 +124,8 @@ def solve_multiple_knapsack(
     if method == 'mtm':
         # These are checked Fortran side as well, but would fail at padding
         maxn = 1000
-        maxm = 10
+        maxm = 20
+        warnm = 10
         if n > maxn:
             raise ValueError(
                 f'Number of items ({n}) cannot be greater than {maxn} for '
@@ -132,6 +134,10 @@ def solve_multiple_knapsack(
             raise ValueError(
                 f'Number of knapsacks ({m}) cannot be greater than {maxm} for '
                 f'method="{method}", please try for example method="mthm"')
+        elif verbose and m > warnm:
+            warnings.warn(
+                    'Using more than 10 knapsacks may cause the problem '
+                    'to take too long! Consider using fewer knapsacks.')
 
         p = pad_array(profits, maxn)
         w = pad_array(weights, maxn)
