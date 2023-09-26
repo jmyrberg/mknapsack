@@ -673,7 +673,7 @@ c    Wiley, 1990,
 c    ISBN: 0-471-92420-2,
 c    LC: QA267.7.M37.
 c
-      integer p(1000),w(1000),c(15),z
+      integer p(1000),w(1000),c(20),z
 
       if ( n .le. 1 ) z = - 1
       if ( n .gt. maxn ) z = - 1
@@ -8243,7 +8243,7 @@ c
 cf2py intent(in) n, m, p, w, c, jck, back
 cf2py intent(hide) jub
 cf2py intent(out) z, x, back
-      integer p(1000),w(1000),c(15),x(1000),back,z
+      integer p(1000),w(1000),c(20),x(1000),back,z
       integer bb(10,1000),bl(10,1001),xc(10,1000),xl(10,1000)
       integer b(1001),ubb(1000)
       integer f(10),pbl(10),q(10),v(10),s,u,ub,vb
@@ -8253,7 +8253,7 @@ cf2py intent(out) z, x, back
       common /pub/  lx(1000),lxi(1000),lr,lri,lubi
 
       maxn = 1000
-      maxm = 15
+      maxm = 20
       z = 0
 
       if ( jck .eq. 1 ) then
