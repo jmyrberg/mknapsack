@@ -123,7 +123,7 @@ def solve_multiple_knapsack(
     if method == 'mtm':
         # These are checked Fortran side as well, but would fail at padding
         maxn = 1000
-        maxm = 10
+        maxm = 15
         if n > maxn:
             raise ValueError(
                 f'Number of items ({n}) cannot be greater than {maxn} for '
